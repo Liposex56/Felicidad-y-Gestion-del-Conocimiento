@@ -1,0 +1,11 @@
+Guia accesible de la pagina inicial y el mapa de unidades.
+
+Estas en la pagina principal de Felicidad y Gestion del Conocimiento. Aqui debes elegir el acompanante virtual que estara contigo durante el recorrido.
+
+Usa la tecla Tab para pasar por las cuatro opciones: Robot, Explorador, Creativo y Mascota virtual. Presiona Enter sobre la opcion que prefieras. La seleccion quedara guardada para tu cuenta.
+
+Despues encontraras el mapa de unidades. La Unidad 1 esta disponible desde el comienzo. Las unidades siguientes se desbloquean solamente al aprobar la evaluacion de la unidad anterior con una calificacion minima del ochenta por ciento.
+
+Para empezar, llega con Tab al boton de la Unidad 1 y presiona Enter. Al entrar, la guia accesible se reiniciara y explicara exclusivamente como recorrer esa unidad.
+
+En el encabezado tambien estan los botones Mi perfil y Cerrar sesion. Mi perfil permite consultar tus certificados. Cerrar sesion te devuelve a la pantalla de acceso.

@@ -1,0 +1,13 @@
+Guia accesible de la Unidad 1.
+
+Estas en la Unidad 1. Tu acompanante virtual aparece a un lado de la pantalla y te ofrece mensajes de orientacion y animo. El recorrido debe hacerse en orden: teoria, recursos visuales, actividades de refuerzo y evaluacion.
+
+Primero encontraras el nombre de la unidad, su descripcion y el mapa conceptual. El mapa contiene cinco tarjetas de teoria. Abre cada tarjeta con Enter y lee todo su contenido. Dentro de la tarjeta puede aparecer el boton Aprende mas, que abre un video complementario sin sacarte del software. Cierra cada ventana con su boton de cerrar o con la tecla Escape si esta disponible. Debes visitar las cinco tarjetas para desbloquear la siguiente parte.
+
+Despues estan los recursos del modulo, incluidas las infografias uno punto uno, uno punto dos y uno punto tres. Abre cada recurso y revisalo. El sistema guarda automaticamente cuales ya visitaste.
+
+Cuando termines la teoria y los recursos, se habilitan las actividades de refuerzo. Hay una actividad de parejas de conceptos y otra actividad de repaso con preguntas de falso o verdadero y frases para completar. Sigue las instrucciones de cada actividad. Tus respuestas y resultados quedan guardados. El boton Reiniciar permite volver a practicar y cambia el orden cuando corresponde.
+
+Al completar todas las actividades se desbloquea el boton Evaluacion Unidad 1. La evaluacion se abre en una ventana independiente dentro de la misma pagina. Responde las diez preguntas y usa el boton Calificar evaluacion. Necesitas al menos ochenta por ciento para aprobar y desbloquear la Unidad 2. Si obtienes entre ochenta y noventa y nueve por ciento, puedes conservar la aprobacion o intentar alcanzar el cien por ciento. Tus mejores respuestas quedan guardadas.
+
+Para regresar al mapa usa el boton Volver al mapa galactico, situado al comienzo de la unidad. Al volver, este audio se detendra. Si entras otra vez a la Unidad 1, la explicacion comenzara nuevamente desde el principio.

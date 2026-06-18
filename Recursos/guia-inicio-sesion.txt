@@ -1,0 +1,9 @@
+Guia accesible de la pantalla de inicio de sesion.
+
+Estas en la entrada del software educativo Felicidad y Gestion del Conocimiento.
+
+Para iniciar sesion, usa la tecla Tab para recorrer los controles. Primero encontraras el campo correo institucional. Escribe tu correo. Luego pulsa Tab y escribe tu contrasena. Pulsa Tab nuevamente hasta llegar al boton Ingresar y presiona Enter.
+
+Si todavia no tienes una cuenta, busca con la tecla Tab el boton No tienes cuenta, registrate aqui. Presiona Enter. Aparecera primero el campo Nombre completo, seguido del correo y la contrasena. Completa los tres campos y activa el boton Registrarse.
+
+Cuando ingreses correctamente, llegaras a la pagina inicial y esta guia cambiara automaticamente. Podras reproducir la nueva explicacion desde el principio.

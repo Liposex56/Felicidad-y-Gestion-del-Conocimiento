@@ -1,0 +1,7 @@
+Guia accesible de la pantalla Mi perfil.
+
+Estas en tu perfil de estudiante. Aqui se muestran tu nombre, correo y los certificados obtenidos al aprobar las unidades.
+
+Puedes usar el control Cambiar foto para seleccionar una imagen de perfil. Los certificados disponibles aparecen en la seccion Mis certificados y pueden abrirse o descargarse.
+
+Para regresar a la pagina principal, busca con la tecla Tab el boton Volver al mapa y presiona Enter. Al regresar, el audio se reiniciara y la guia de la pagina inicial quedara preparada desde el comienzo.
