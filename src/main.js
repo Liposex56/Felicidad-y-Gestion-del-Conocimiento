@@ -18,6 +18,10 @@ function unitTwoGallery(title, description, slideNumbers) {
   return slideGallery("unidad-2/slides", title, description, slideNumbers);
 }
 
+function unitThreeGallery(title, description, slideNumbers) {
+  return slideGallery("unidad-3/slides", title, description, slideNumbers);
+}
+
 const courseData = {
   1: {
     title: "Fundamentos de la Psicología Positiva",
@@ -275,10 +279,56 @@ const courseData = {
     title: "Felicidad y Bienestar Subjetivo",
     desc: "Evaluación personal de la vida, motivación, hábitos positivos y el poder de la inteligencia emocional.",
     theoryNodes: [
-      { id: "3.1", title: "Bienestar subjetivo", content: `<p>El bienestar subjetivo hace referencia a la manera como las personas evalúan y perciben su propia vida, considerando emociones, satisfacción personal y equilibrio emocional.</p><p>Ed Diener lo define como la evaluación que las personas hacen de sus vidas, incluyendo juicios cognitivos y respuestas emocionales.</p><ul><li>Incluye satisfacción con la vida, emociones positivas, emociones negativas, percepción de felicidad y calidad de vida.</li><li>Se relaciona con PERMA: emociones positivas, compromiso, relaciones, significado y logros.</li></ul>` },
-      { id: "3.2", title: "Flow y experiencia óptima", content: `<p>El Flow fue desarrollado por Mihaly Csikszentmihalyi y se define como un estado de concentración profunda y disfrute total durante una actividad.</p><ul><li>Concentración absoluta.</li><li>Equilibrio entre reto y habilidad.</li><li>Pérdida de noción del tiempo.</li><li>Motivación intrínseca.</li><li>Sensación de control.</li></ul><p>Favorece creatividad, aprendizaje, autoestima, motivación y felicidad.</p>` },
-      { id: "3.3", title: "Motivación y propósito de vida", content: `<p>La motivación es la fuerza interna que impulsa a las personas a actuar, alcanzar metas y satisfacer necesidades. Herbert Petri la define como procesos que activan, dirigen y mantienen la conducta.</p><h3>Tipos de motivación</h3><p>La motivación intrínseca nace de la satisfacción personal. La motivación extrínseca depende de recompensas externas.</p><h3>Propósito de vida</h3><p>Viktor Frankl afirma: “Quien tiene un porqué para vivir, puede soportar casi cualquier cómo”. El propósito orienta decisiones, fortalece resiliencia, aumenta motivación y mejora bienestar psicológico.</p>` },
-      { id: "3.4", title: "Hábitos de felicidad e inteligencia emocional", content: `<h3>Hábitos de felicidad</h3><p>Son acciones repetidas que favorecen bienestar emocional y calidad de vida. Sonja Lyubomirsky sostiene que la felicidad puede cultivarse mediante actividades intencionales.</p><ul><li>Gratitud, optimismo, actividad física, relaciones positivas, meditación, altruismo y buen descanso.</li></ul><h3>Inteligencia emocional</h3><p>Es la capacidad para reconocer, comprender y manejar emociones propias y ajenas. Daniel Goleman afirma que el éxito personal depende tanto de habilidades emocionales como de capacidades intelectuales.</p><ul><li>Componentes: autoconocimiento, autorregulación, motivación, empatía y habilidades sociales.</li></ul>` }
+      {
+        id: "3.1",
+        title: "Bienestar subjetivo",
+        learnMoreVideo: {
+          title: "Aprende más: bienestar y felicidad",
+          description: "Video de apoyo proporcionado para ampliar los pilares del bienestar subjetivo en la Unidad 3.",
+          embedUrl: "https://www.youtube.com/embed/iyAZbuUlJTU",
+          source: "YouTube"
+        },
+        learnMoreResources: [
+          {
+            type: "image",
+            title: "Pilares de la felicidad y el bienestar subjetivo",
+            description: "Mapa visual del bienestar subjetivo, PERMA, propósito, Flow, motivación, hábitos e inteligencia emocional.",
+            imageUrl: "Recursos/Pilares_de_felicidad_y_bienestar.png"
+          },
+          unitThreeGallery("Arquitectura del bienestar subjetivo", "Visión integral del bienestar, sus dimensiones, el modelo PERMA y la relación entre los conceptos centrales.", [1, 2, 3, 4, 13, 15])
+        ],
+        content: `<p>El bienestar subjetivo hace referencia a la manera como las personas evalúan y perciben su propia vida, considerando emociones, satisfacción personal y equilibrio emocional.</p><p>Ed Diener lo define como la evaluación que las personas hacen de sus vidas, incluyendo juicios cognitivos y respuestas emocionales.</p><ul><li>Incluye satisfacción con la vida, emociones positivas, emociones negativas, percepción de felicidad y calidad de vida.</li><li>Se relaciona con PERMA: emociones positivas, compromiso, relaciones, significado y logros.</li></ul>`
+      },
+      {
+        id: "3.2",
+        title: "Flow y experiencia óptima",
+        learnMoreResources: [
+          unitThreeGallery("Mecánica y canal del Flow", "Características de la experiencia óptima, equilibrio entre reto y habilidad y beneficios para el aprendizaje y la creatividad.", [5, 6])
+        ],
+        content: `<p>El Flow fue desarrollado por Mihaly Csikszentmihalyi y se define como un estado de concentración profunda y disfrute total durante una actividad.</p><ul><li>Concentración absoluta.</li><li>Equilibrio entre reto y habilidad.</li><li>Pérdida de noción del tiempo.</li><li>Motivación intrínseca.</li><li>Sensación de control.</li></ul><p>Favorece creatividad, aprendizaje, autoestima, motivación y felicidad.</p>`
+      },
+      {
+        id: "3.3",
+        title: "Motivación y propósito de vida",
+        learnMoreResources: [
+          unitThreeGallery("Motivación y brújula existencial", "Comparación entre motivación intrínseca y extrínseca, y el propósito como fuente de dirección, resiliencia y sentido.", [7, 8])
+        ],
+        content: `<p>La motivación es la fuerza interna que impulsa a las personas a actuar, alcanzar metas y satisfacer necesidades. Herbert Petri la define como procesos que activan, dirigen y mantienen la conducta.</p><h3>Tipos de motivación</h3><p>La motivación intrínseca nace de la satisfacción personal. La motivación extrínseca depende de recompensas externas.</p><h3>Propósito de vida</h3><p>Viktor Frankl afirma: “Quien tiene un porqué para vivir, puede soportar casi cualquier cómo”. El propósito orienta decisiones, fortalece resiliencia, aumenta motivación y mejora bienestar psicológico.</p>`
+      },
+      {
+        id: "3.4",
+        title: "Hábitos de felicidad e inteligencia emocional",
+        learnMoreResources: [
+          {
+            type: "image",
+            title: "Los cinco pilares del bienestar y la felicidad",
+            description: "Síntesis visual de Flow, propósito, hábitos positivos e inteligencia emocional.",
+            imageUrl: "Recursos/Los_5_Pilares_del_Bienestar.png"
+          },
+          unitThreeGallery("Hábitos e inteligencia emocional", "Prácticas intencionales, auditoría de hábitos, componentes emocionales y aplicación del bienestar consciente.", [9, 10, 11, 12, 14])
+        ],
+        content: `<h3>Hábitos de felicidad</h3><p>Son acciones repetidas que favorecen bienestar emocional y calidad de vida. Sonja Lyubomirsky sostiene que la felicidad puede cultivarse mediante actividades intencionales.</p><ul><li>Gratitud, optimismo, actividad física, relaciones positivas, meditación, altruismo y buen descanso.</li></ul><h3>Inteligencia emocional</h3><p>Es la capacidad para reconocer, comprender y manejar emociones propias y ajenas. Daniel Goleman afirma que el éxito personal depende tanto de habilidades emocionales como de capacidades intelectuales.</p><ul><li>Componentes: autoconocimiento, autorregulación, motivación, empatía y habilidades sociales.</li></ul>`
+      }
     ],
     quiz: [
       { q: "El concepto de 'Flow' fue desarrollado por:", options: ["Daniel Goleman", "Mihaly Csikszentmihalyi", "Viktor Frankl", "Ed Diener"], correct: 1 },
@@ -302,13 +352,17 @@ const courseData = {
       },
       {
         type: "infografia",
-        title: "Ruta hacia el Flow",
-        description: "Esquema visual de equilibrio entre reto, habilidad, metas claras y retroalimentación."
+        title: "Pilares de la felicidad humana",
+        description: "Infografía integradora sobre bienestar subjetivo, Flow, motivación, hábitos positivos e inteligencia emocional.",
+        imageUrl: "Recursos/infografia recursus del modulo unidad 3.png",
+        content: "<p>Esta infografía resume los cinco ejes principales de la Unidad 3 y muestra prácticas conscientes para fortalecer el bienestar.</p>"
       },
       {
+        id: "positive-habits-plan",
         type: "actividad",
+        activityKind: "positiveHabitsPlan",
         title: "Plan de hábitos positivos",
-        description: "Plantilla para proponer una práctica semanal de bienestar subjetivo."
+        description: "Actividad interactiva para diseñar una práctica semanal de bienestar subjetivo."
       }
     ]
   },
@@ -919,6 +973,7 @@ window.openResource = function(modId, mediaIndex) {
   if (item.type === "video") return openVideo(modId, mediaIndex);
   if (item.activityKind === "gratitudeJournal") return openGratitudeJournal(modId, mediaIndex, item);
   if (item.activityKind === "happinessCurve") return openHappinessCurve(modId, mediaIndex, item);
+  if (item.activityKind === "positiveHabitsPlan") return openPositiveHabitsPlan(modId, mediaIndex, item);
   saveViewedResource(modId, mediaIndex);
   updateModuleLocks();
 
@@ -1048,6 +1103,60 @@ window.saveHappinessCurve = function(event, modId, mediaIndex) {
   const submitButton = form.querySelector('button[type="submit"]');
   if (submitButton) submitButton.textContent = "Actualizar curva";
   showToast("Tu curva personal de felicidad quedó guardada.");
+}
+
+function openPositiveHabitsPlan(modId, mediaIndex, item) {
+  const saved = activityProgressByModule[modId]?.positiveHabitsPlan || {};
+  const body = `
+    <p>${item.description}</p>
+    <p>Elige una acción pequeña, concreta y sostenible que puedas practicar durante los próximos siete días.</p>
+    <form id="positiveHabitsForm" class="journal-form" onsubmit="savePositiveHabitsPlan(event, ${modId}, ${mediaIndex})">
+      <div class="journal-grid">
+        <label>Hábito que deseas fortalecer
+          <select name="habit" required>
+            <option value="">Selecciona un hábito</option>
+            <option>Gratitud</option><option>Ejercicio físico</option><option>Meditación</option>
+            <option>Relaciones positivas</option><option>Altruismo</option><option>Descanso saludable</option>
+          </select>
+        </label>
+        <label>Frecuencia semanal<input type="number" name="frequency" min="1" max="7" placeholder="Días por semana" required></label>
+      </div>
+      <label>¿Por qué este hábito es importante para ti?<textarea name="purpose" rows="3" required></textarea></label>
+      <label>Señal de inicio: ¿cuándo y dónde lo realizarás?<textarea name="trigger" rows="3" placeholder="Ej. después del desayuno, en mi habitación" required></textarea></label>
+      <div class="journal-grid">
+        <label>Posible obstáculo<textarea name="obstacle" rows="3" required></textarea></label>
+        <label>Estrategia para superarlo<textarea name="strategy" rows="3" required></textarea></label>
+      </div>
+      <label>¿Cómo sabrás que cumpliste tu plan al finalizar la semana?<textarea name="evidence" rows="3" required></textarea></label>
+      <div class="journal-actions">
+        <p id="habitsSaveStatus" class="journal-save-status" aria-live="polite">${Object.keys(saved).length ? "Tu plan está guardado. Puedes actualizarlo." : "Completa el plan para guardar tu compromiso."}</p>
+        <button type="submit" class="start-button">${Object.keys(saved).length ? "Actualizar plan" : "Guardar plan"}</button>
+      </div>
+    </form>
+  `;
+
+  openContentModal(item.title, body);
+  const form = document.getElementById("positiveHabitsForm");
+  Object.entries(saved).forEach(([name, value]) => {
+    const field = form.elements.namedItem(name);
+    if (field) field.value = value;
+  });
+}
+
+window.savePositiveHabitsPlan = function(event, modId, mediaIndex) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const plan = Object.fromEntries(new FormData(form).entries());
+  activityProgressByModule[modId] = { ...(activityProgressByModule[modId] || {}), positiveHabitsPlan: plan };
+  saveViewedResource(modId, mediaIndex);
+  saveUserProgress();
+  renderModuleMedia(courseData[modId].media || []);
+  updateModuleLocks();
+  const status = document.getElementById("habitsSaveStatus");
+  if (status) status.textContent = "Plan guardado correctamente. Puedes actualizarlo cuando quieras.";
+  const submitButton = form.querySelector('button[type="submit"]');
+  if (submitButton) submitButton.textContent = "Actualizar plan";
+  showToast("Tu plan de hábitos positivos quedó guardado.");
 }
 
 function renderReinforcement(activity) {
