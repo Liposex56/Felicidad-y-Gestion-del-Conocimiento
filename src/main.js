@@ -419,29 +419,38 @@ const moduleCompanionMessages = {
 const reinforcementData = {
   1: {
     title: "Parejas de Psicología Positiva",
+    sprite: "Recursos/activity-sprites/unit-1-concepts.png",
     pairs: [
-      { concept: "PERMA", answer: "Emociones positivas, compromiso, relaciones, sentido y logro." },
-      { concept: "Flow", answer: "Concentración profunda cuando el reto y la habilidad están equilibrados." },
-      { concept: "Comunicación asertiva", answer: "Expresar ideas y emociones con claridad, respeto y empatía." },
-      { concept: "Fortalezas humanas", answer: "Capacidades personales que ayudan a crecer y afrontar desafíos." }
+      { concept: "PERMA", answer: "Un programa de bienestar integra experiencias agradables, involucramiento, vínculos, sentido vital y percepción de logro." },
+      { concept: "Flow", answer: "Una estudiante pierde la noción del tiempo mientras resuelve un reto exigente que corresponde con sus habilidades." },
+      { concept: "Comunicación asertiva", answer: "Ante un desacuerdo, una persona expresa su postura con claridad, escucha la otra perspectiva y establece límites respetuosos." },
+      { concept: "Fortalezas humanas", answer: "Una intervención identifica recursos personales estables y enseña a utilizarlos deliberadamente frente a nuevos desafíos." },
+      { concept: "Gratitud", answer: "Una práctica dirige la atención hacia beneficios recibidos, reconoce su valor y la contribución de otras personas." },
+      { concept: "Resiliencia", answer: "Después de un fracaso académico, la persona reorganiza estrategias, obtiene aprendizaje y retoma sus metas." }
     ]
   },
   2: {
     title: "Factores de la felicidad",
+    sprite: "Recursos/activity-sprites/unit-2-concepts.png",
     pairs: [
-      { concept: "Dopamina", answer: "Neurotransmisor asociado al placer y la motivación." },
-      { concept: "Plasticidad neuronal", answer: "Capacidad del cerebro para modificar sus conexiones." },
-      { concept: "Relaciones sociales", answer: "Redes de apoyo que fortalecen el bienestar." },
-      { concept: "Bienestar subjetivo", answer: "Evaluación personal de satisfacción con la vida." }
+      { concept: "Dopamina", answer: "Su liberación participa en la anticipación de recompensas y favorece la repetición de conductas orientadas a una meta." },
+      { concept: "Plasticidad neuronal", answer: "La práctica sostenida modifica circuitos cerebrales y permite consolidar nuevas formas de responder y aprender." },
+      { concept: "Relaciones sociales", answer: "El apoyo percibido, la pertenencia y los vínculos significativos actúan como factores protectores ante el estrés." },
+      { concept: "Bienestar subjetivo", answer: "Integra la valoración cognitiva de la propia vida con la frecuencia relativa de afectos positivos y negativos." },
+      { concept: "Predisposición genética", answer: "Explica una proporción de las diferencias individuales, pero interactúa con el contexto y las acciones intencionales." },
+      { concept: "Curva emocional", answer: "Permite analizar variaciones del estado afectivo antes, durante y después de acontecimientos significativos." }
     ]
   },
   3: {
     title: "Bienestar y hábitos",
+    sprite: "Recursos/activity-sprites/unit-3-concepts.png",
     pairs: [
-      { concept: "Motivación intrínseca", answer: "Impulso que nace de la satisfacción personal." },
-      { concept: "Inteligencia emocional", answer: "Reconocer, comprender y manejar emociones." },
-      { concept: "Propósito", answer: "Sentido que orienta metas y decisiones." },
-      { concept: "Hábito positivo", answer: "Práctica repetida que fortalece bienestar y aprendizaje." }
+      { concept: "Motivación intrínseca", answer: "La conducta se mantiene por el interés y la satisfacción inherentes a la tarea, incluso sin una recompensa externa." },
+      { concept: "Inteligencia emocional", answer: "Supone percibir información afectiva, comprender sus causas y regular la respuesta sin negar lo que se siente." },
+      { concept: "Propósito de vida", answer: "Organiza decisiones presentes alrededor de una dirección significativa que trasciende objetivos inmediatos." },
+      { concept: "Hábito positivo", answer: "Una señal estable activa una conducta repetida cuya consecuencia facilita que vuelva a realizarse en el futuro." },
+      { concept: "Flow", answer: "La atención se absorbe por completo cuando las demandas de la tarea y las capacidades disponibles se encuentran equilibradas." },
+      { concept: "Empatía", answer: "Requiere comprender el marco de referencia ajeno y responder de manera sensible sin confundirlo con la experiencia propia." }
     ]
   }
 };
@@ -451,34 +460,46 @@ const reviewActivitiesData = {
     trueFalse: [
       { text: "La psicología positiva estudia únicamente enfermedades mentales.", answer: false },
       { text: "Martin Seligman es uno de los principales autores de la psicología positiva.", answer: true },
-      { text: "Las emociones positivas favorecen el bienestar.", answer: true }
+      { text: "Las emociones positivas favorecen el bienestar.", answer: true },
+      { text: "El modelo PERMA reúne cinco dimensiones del bienestar.", answer: true }
     ],
     fill: [
       { text: "La psicología positiva busca desarrollar ______ humanas.", answer: "fortalezas" },
-      { text: "El bienestar emocional mejora la ______ de vida.", answer: "calidad" }
-    ]
+      { text: "El bienestar emocional mejora la ______ de vida.", answer: "calidad" },
+      { text: "El modelo de Seligman se resume con las letras ______.", answer: "perma" },
+      { text: "La concentración profunda entre reto y habilidad se llama ______.", answer: "flow" }
+    ],
+    distractors: ["rutina", "memoria", "competencia"]
   },
   2: {
     trueFalse: [
       { text: "La felicidad puede estudiarse desde la psicología, la cognición y las neurociencias.", answer: true },
       { text: "Las relaciones sociales no influyen en el bienestar.", answer: false },
-      { text: "La dopamina se asocia con motivación y placer.", answer: true }
+      { text: "La dopamina se asocia con motivación y placer.", answer: true },
+      { text: "La predisposición genética determina por completo la felicidad.", answer: false }
     ],
     fill: [
       { text: "La capacidad del cerebro para cambiar conexiones se llama ______ neuronal.", answer: "plasticidad" },
-      { text: "El yo que experimenta y el yo que recuerda fueron estudiados por Daniel ______.", answer: "kahneman" }
-    ]
+      { text: "El yo que experimenta y el yo que recuerda fueron estudiados por Daniel ______.", answer: "kahneman" },
+      { text: "El neurotransmisor relacionado con placer y motivación es la ______.", answer: "dopamina" },
+      { text: "La valoración personal de la vida se denomina ______ subjetivo.", answer: "bienestar" }
+    ],
+    distractors: ["adrenalina", "conducta", "costumbre"]
   },
   3: {
     trueFalse: [
       { text: "El Flow requiere equilibrio entre reto y habilidad.", answer: true },
       { text: "La inteligencia emocional implica ignorar las emociones.", answer: false },
-      { text: "El propósito de vida se relaciona con sentido y motivación.", answer: true }
+      { text: "El propósito de vida se relaciona con sentido y motivación.", answer: true },
+      { text: "Un hábito positivo se consolida mediante práctica intencional y repetida.", answer: true }
     ],
     fill: [
       { text: "La motivación que nace de la satisfacción personal es ______.", answer: "intrínseca" },
-      { text: "Daniel ______ popularizó la inteligencia emocional.", answer: "goleman" }
-    ]
+      { text: "Daniel ______ popularizó la inteligencia emocional.", answer: "goleman" },
+      { text: "El sentido que orienta metas y decisiones se llama ______ de vida.", answer: "propósito" },
+      { text: "El estado de concentración plena se conoce como ______.", answer: "flow" }
+    ],
+    distractors: ["impulso", "talento", "recuerdo"]
   }
 };
 
@@ -503,6 +524,9 @@ let currentFinalQuestions = [];
 let reinforcementCards = [];
 let flippedReinforcementCards = [];
 let matchedReinforcementPairs = 0;
+let reinforcementAttempts = 0;
+let reinforcementStreak = 0;
+let selectedFillWord = null;
 let activeTheoryResources = [];
 const modalFocusStack = [];
 
@@ -1159,40 +1183,70 @@ window.savePositiveHabitsPlan = function(event, modId, mediaIndex) {
   showToast("Tu plan de hábitos positivos quedó guardado.");
 }
 
-function renderReinforcement(activity) {
+function escapeHtml(value = "") {
+  return String(value).replace(/[&<>"']/g, character => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+  })[character]);
+}
+
+function getSpritePosition(index) {
+  return `${[0, 50, 100][index % 3]}% ${index < 3 ? 0 : 100}%`;
+}
+
+function renderReinforcement(activity, practiceMode = false) {
   const container = document.getElementById("reinforcementContainer");
   if (!container || !activity) return;
-  const isSolved = !!activityProgressByModule[currentModuleId]?.memory;
-
+  const progressSolved = !!activityProgressByModule[currentModuleId]?.memory;
+  const isSolved = progressSolved && !practiceMode;
   const baseCards = activity.pairs.flatMap((pair, index) => [
     { id: `c-${index}`, pairId: index, label: pair.concept, kind: "concept" },
     { id: `a-${index}`, pairId: index, label: pair.answer, kind: "answer" }
   ]);
+
   reinforcementCards = (isSolved ? baseCards : shuffleArray(baseCards)).map((card, index) => ({ ...card, cardId: `card-${index}` }));
   flippedReinforcementCards = [];
   matchedReinforcementPairs = isSolved ? activity.pairs.length : 0;
+  reinforcementAttempts = 0;
+  reinforcementStreak = 0;
 
   container.innerHTML = `
-    <div class="reinforcement-head">
-      <strong>${activity.title}</strong>
-      <span>Encuentra cada concepto con su definición. Actividad tipo parejas.</span>
+    <div class="activity-command-bar">
+      <div>
+        <span class="activity-kicker">Desafío de análisis</span>
+        <h3>${activity.title}</h3>
+        <p>Interpreta cada caso y relaciónalo con el concepto correcto. No hay pistas visuales repetidas.</p>
+      </div>
+      <div class="activity-stats" aria-label="Progreso de la actividad">
+        <span><strong id="memoryCounter">${matchedReinforcementPairs}/${activity.pairs.length}</strong> parejas</span>
+        <span><strong id="memoryAttempts">0</strong> intentos</span>
+        <span><strong id="memoryAccuracy">--</strong> precisión</span>
+      </div>
     </div>
-    <div class="memory-grid">
-      ${reinforcementCards.map(card => `
-        <button type="button" class="memory-card ${isSolved ? 'is-flipped is-matched' : ''}" id="${card.cardId}" onclick="flipReinforcementCard('${card.cardId}')">
-          <span class="memory-front">?</span>
+    <div class="memory-grid" role="group" aria-label="Tablero de parejas">
+      ${reinforcementCards.map((card, index) => `
+        <button type="button" class="memory-card ${isSolved ? 'is-flipped is-matched' : ''}" id="${card.cardId}"
+          aria-label="${isSolved ? `${card.kind === "concept" ? "Concepto" : "Caso aplicado"}: ${escapeHtml(card.label)}` : `Carta oculta ${index + 1} de ${baseCards.length}`}"
+          data-hidden-label="Carta oculta ${index + 1} de ${baseCards.length}"
+          onclick="flipReinforcementCard('${card.cardId}')">
+          <span class="memory-front">
+            <span class="memory-cover-symbol" aria-hidden="true">?</span>
+            <span class="memory-front-hint">Analizar carta</span>
+          </span>
           <span class="memory-back">
-            <small>${card.kind === "concept" ? "Concepto" : "Definición"}</small>
-            ${card.label}
+            ${card.kind === "concept"
+              ? `<span class="memory-visual memory-visual-small" style="background-image:url('${activity.sprite}');background-position:${getSpritePosition(card.pairId)}" aria-hidden="true"></span>`
+              : `<span class="definition-marker" aria-hidden="true">CASO</span>`}
+            <small>${card.kind === "concept" ? "Concepto" : "Situación aplicada"}</small>
+            <span>${escapeHtml(card.label)}</span>
           </span>
         </button>
       `).join("")}
     </div>
     <div class="reinforcement-actions">
-      <button type="button" class="ghost-button" onclick="resetReinforcement()">Reiniciar</button>
-      <span class="memory-counter" id="memoryCounter">${matchedReinforcementPairs} de ${activity.pairs.length} parejas</span>
+      <button type="button" class="ghost-button" onclick="resetReinforcement()">Reiniciar y mezclar</button>
+      <span class="activity-tip">Las imágenes aparecen solo en los conceptos. Para acertar debes interpretar cada situación.</span>
     </div>
-    <p class="reinforcement-feedback ${isSolved ? 'is-success' : ''}" id="reinforcementFeedback">${isSolved ? 'Actividad resuelta correctamente. Puedes reiniciar para cambiar el orden.' : ''}</p>
+    <p class="reinforcement-feedback ${isSolved ? 'is-success' : ''}" id="reinforcementFeedback" role="status">${isSolved ? 'Actividad resuelta. Tus parejas permanecen guardadas; puedes mezclarlas y practicar de nuevo.' : practiceMode ? 'Nueva ronda preparada. Tu logro anterior sigue guardado.' : 'Selecciona dos cartas para comenzar.'}</p>
   `;
 }
 
@@ -1206,79 +1260,200 @@ window.flipReinforcementCard = function(cardId) {
   if (!card || !element || element.classList.contains("is-matched") || element.classList.contains("is-flipped")) return;
 
   element.classList.add("is-flipped");
+  element.setAttribute("aria-label", `${card.kind === "concept" ? "Concepto" : "Situación aplicada"}: ${card.label}`);
   flippedReinforcementCards.push(card);
-
   if (flippedReinforcementCards.length !== 2) return;
 
+  reinforcementAttempts++;
+  document.getElementById("memoryAttempts").textContent = reinforcementAttempts;
   const [first, second] = flippedReinforcementCards;
   const isMatch = first.pairId === second.pairId && first.kind !== second.kind;
 
   setTimeout(() => {
     const firstEl = document.getElementById(first.cardId);
     const secondEl = document.getElementById(second.cardId);
+    if (!firstEl || !secondEl) return;
+
     if (isMatch) {
       firstEl.classList.add("is-matched");
       secondEl.classList.add("is-matched");
       matchedReinforcementPairs++;
-      document.getElementById("memoryCounter").textContent = `${matchedReinforcementPairs} de ${activity.pairs.length} parejas`;
+      reinforcementStreak++;
+      document.getElementById("memoryCounter").textContent = `${matchedReinforcementPairs}/${activity.pairs.length}`;
+      document.getElementById("memoryAccuracy").textContent = `${Math.round((matchedReinforcementPairs / reinforcementAttempts) * 100)}%`;
       feedback.className = "reinforcement-feedback is-success";
+      const performance = reinforcementAttempts <= 8 ? "Dominio sobresaliente" : reinforcementAttempts <= 12 ? "Análisis sólido" : "Reto superado";
       feedback.textContent = matchedReinforcementPairs === activity.pairs.length
-        ? "¡Excelente! Encontraste todas las parejas conceptuales."
-        : "Muy bien, esa pareja es correcta.";
+        ? `${performance}: completaste el reto en ${reinforcementAttempts} intentos.`
+        : `¡Pareja correcta! Llevas una racha de ${reinforcementStreak}.`;
       if (matchedReinforcementPairs === activity.pairs.length) {
         markActivityComplete(currentModuleId, "memory");
+        launchActivityCelebration("reinforcementContainer");
+        const speech = document.getElementById("companionSpeech");
+        if (speech) speech.textContent = `¡Excelente, ${getStudentName()}! Ya dominas las conexiones clave de esta unidad. Continúa con el siguiente reto.`;
       }
     } else {
+      reinforcementStreak = 0;
+      document.getElementById("memoryAccuracy").textContent = `${Math.round((matchedReinforcementPairs / reinforcementAttempts) * 100)}%`;
       firstEl.classList.remove("is-flipped");
       secondEl.classList.remove("is-flipped");
+      firstEl.setAttribute("aria-label", firstEl.dataset.hiddenLabel);
+      secondEl.setAttribute("aria-label", secondEl.dataset.hiddenLabel);
       feedback.className = "reinforcement-feedback is-warning";
-      feedback.textContent = "No era pareja. Observa la teoría e intenta otra combinación.";
+      feedback.textContent = "La relación conceptual no es correcta. Contrasta el mecanismo del caso con los conceptos disponibles.";
     }
     flippedReinforcementCards = [];
-  }, 700);
+  }, 780);
 }
 
 window.resetReinforcement = function() {
-  clearActivityProgress(currentModuleId, "memory");
-  renderReinforcement(reinforcementData[currentModuleId]);
+  renderReinforcement(reinforcementData[currentModuleId], true);
 }
 
-function renderReviewActivities(activity) {
+function launchActivityCelebration(containerId) {
+  const host = document.getElementById(containerId);
+  if (!host || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const celebration = document.createElement("div");
+  celebration.className = "activity-celebration";
+  celebration.setAttribute("aria-hidden", "true");
+  celebration.innerHTML = Array.from({ length: 18 }, (_, index) => `<i style="--i:${index}"></i>`).join("");
+  host.appendChild(celebration);
+  setTimeout(() => celebration.remove(), 1800);
+}
+
+function renderFillPrompt(item, index, savedValue, isSolved) {
+  const [before, after] = item.text.split("______");
+  const safeValue = escapeHtml(savedValue || "");
+  return `
+    <div class="fill-row ${isSolved ? 'is-correct' : ''}" data-fill-row="${index}">
+      <span class="fill-number">${index + 1}</span>
+      <p>${escapeHtml(before)}
+        <button type="button" class="drop-blank ${savedValue ? 'has-value' : ''}" data-fill-drop="${index}" data-value="${safeValue}"
+          ondragover="event.preventDefault()" ondrop="dropFillWord(event, ${index})" onclick="placeSelectedFillWord(${index})"
+          aria-label="Espacio ${index + 1}: ${safeValue || 'sin respuesta'}">${safeValue || 'Suelta aquí'}</button>
+        ${escapeHtml(after || "")}
+      </p>
+      <button type="button" class="clear-drop" onclick="clearFillWord(${index})" aria-label="Quitar palabra del espacio ${index + 1}" ${savedValue ? '' : 'hidden'}>&times;</button>
+    </div>`;
+}
+
+function renderReviewActivities(activity, practiceMode = false) {
   const container = document.getElementById("reviewActivitiesContainer");
   if (!container || !activity) return;
-  const saved = activityProgressByModule[currentModuleId]?.reviewAnswers || {};
-  const isSolved = !!activityProgressByModule[currentModuleId]?.review;
+  const progressSolved = !!activityProgressByModule[currentModuleId]?.review;
+  const saved = practiceMode ? {} : activityProgressByModule[currentModuleId]?.reviewAnswers || {};
+  const isSolved = progressSolved && !practiceMode;
+  const words = shuffleArray([...activity.fill.map(item => item.answer), ...(activity.distractors || [])]);
+  selectedFillWord = null;
 
   container.innerHTML = `
+    <div class="activity-command-bar review-command-bar">
+      <div>
+        <span class="activity-kicker">Laboratorio de repaso</span>
+        <h3>Decide, arrastra y comprueba</h3>
+        <p>Resuelve las dos misiones. Puedes arrastrar una palabra o seleccionarla y luego tocar el espacio.</p>
+      </div>
+      <div class="review-progress" aria-live="polite"><strong id="reviewAnswered">0</strong><span>de ${activity.trueFalse.length + activity.fill.length}<br>respondidas</span></div>
+    </div>
     <div class="review-activities-grid">
-      <article class="mini-activity-card">
-        <h3>Falso o verdadero</h3>
-        <p>Marca cada afirmación según corresponda.</p>
+      <article class="mini-activity-card decision-activity">
+        <div class="mini-activity-heading"><span>01</span><div><h3>Detecta la afirmación</h3><p>Decide si cada idea es verdadera o falsa.</p></div></div>
         ${activity.trueFalse.map((item, index) => `
-          <div class="truefalse-row ${isSolved ? 'is-correct' : ''}">
-            <span>${item.text}</span>
-            <label><input type="radio" name="tf${index}" value="true" ${saved.trueFalse?.[index] === true ? 'checked' : ''}> V</label>
-            <label><input type="radio" name="tf${index}" value="false" ${saved.trueFalse?.[index] === false ? 'checked' : ''}> F</label>
-          </div>
+          <fieldset class="truefalse-row ${isSolved ? 'is-correct' : ''}" data-tf-row="${index}">
+            <legend><span>${index + 1}</span>${escapeHtml(item.text)}</legend>
+            <div class="truth-options">
+              <label><input type="radio" name="tf${index}" value="true" onchange="updateReviewProgress()" ${saved.trueFalse?.[index] === true ? 'checked' : ''}><span>Verdadero</span></label>
+              <label><input type="radio" name="tf${index}" value="false" onchange="updateReviewProgress()" ${saved.trueFalse?.[index] === false ? 'checked' : ''}><span>Falso</span></label>
+            </div>
+          </fieldset>
         `).join("")}
       </article>
-      <article class="mini-activity-card">
-        <h3>Completa la frase</h3>
-        <p>Escribe la palabra que falta en cada oración.</p>
-        ${activity.fill.map((item, index) => `
-          <label class="fill-row">
-            <span>${item.text}</span>
-            <input type="text" data-fill="${index}" placeholder="Respuesta" value="${saved.fill?.[index] || ''}" class="${isSolved ? 'is-correct' : ''}">
-          </label>
-        `).join("")}
+      <article class="mini-activity-card word-activity">
+        <div class="mini-activity-heading"><span>02</span><div><h3>Construye la idea</h3><p>Lleva cada palabra al espacio correcto.</p></div></div>
+        <div class="word-bank" aria-label="Banco de palabras">
+          ${words.map(word => `<button type="button" class="word-chip" draggable="true" data-word="${escapeHtml(word)}" ondragstart="startFillDrag(event, '${escapeHtml(word)}')" onclick="selectFillWord('${escapeHtml(word)}', this)">${escapeHtml(word)}</button>`).join("")}
+        </div>
+        <div class="fill-prompts">
+          ${activity.fill.map((item, index) => renderFillPrompt(item, index, saved.fill?.[index] || "", isSolved)).join("")}
+        </div>
       </article>
     </div>
-    <div class="reinforcement-actions">
-      <button type="button" class="ghost-button" onclick="resetReviewActivities()">Reiniciar actividades</button>
-      <button type="button" class="start-button" onclick="checkReviewActivities()">Comprobar actividades</button>
+    <div class="reinforcement-actions review-actions">
+      <button type="button" class="ghost-button" onclick="resetReviewActivities()">Reiniciar y cambiar orden</button>
+      <button type="button" class="start-button" onclick="checkReviewActivities()">Comprobar respuestas</button>
     </div>
-    <p class="reinforcement-feedback ${isSolved ? 'is-success' : ''}" id="reviewFeedback">${isSolved ? 'Actividad resuelta correctamente. Tus respuestas quedaron guardadas.' : ''}</p>
+    <p class="reinforcement-feedback ${isSolved ? 'is-success' : ''}" id="reviewFeedback" role="status">${isSolved ? 'Actividad resuelta correctamente. Tus respuestas quedaron guardadas.' : practiceMode ? 'Nueva ronda preparada. Tu logro anterior sigue guardado.' : 'Completa ambas misiones y comprueba tu resultado.'}</p>
   `;
+  updateWordBankState();
+  updateReviewProgress();
+}
+
+window.startFillDrag = function(event, word) {
+  event.dataTransfer.setData("text/plain", word);
+  event.dataTransfer.effectAllowed = "move";
+}
+
+window.selectFillWord = function(word, button) {
+  if (button.disabled) return;
+  selectedFillWord = selectedFillWord === word ? null : word;
+  document.querySelectorAll(".word-chip").forEach(chip => chip.classList.toggle("is-selected", chip === button && !!selectedFillWord));
+  document.querySelectorAll(".drop-blank").forEach(blank => blank.classList.toggle("is-ready", !!selectedFillWord));
+}
+
+function assignFillWord(index, word) {
+  if (!word) return;
+  const blank = document.querySelector(`[data-fill-drop="${index}"]`);
+  if (!blank) return;
+  blank.dataset.value = word;
+  blank.textContent = word;
+  blank.classList.add("has-value");
+  blank.classList.remove("is-correct", "is-wrong", "is-ready");
+  blank.setAttribute("aria-label", `Espacio ${index + 1}: ${word}`);
+  const clearButton = document.querySelector(`[data-fill-row="${index}"] .clear-drop`);
+  if (clearButton) clearButton.hidden = false;
+  selectedFillWord = null;
+  updateWordBankState();
+  updateReviewProgress();
+}
+
+window.dropFillWord = function(event, index) {
+  event.preventDefault();
+  assignFillWord(index, event.dataTransfer.getData("text/plain"));
+}
+
+window.placeSelectedFillWord = function(index) {
+  if (selectedFillWord) assignFillWord(index, selectedFillWord);
+}
+
+window.clearFillWord = function(index) {
+  const blank = document.querySelector(`[data-fill-drop="${index}"]`);
+  if (!blank) return;
+  blank.dataset.value = "";
+  blank.textContent = "Suelta aquí";
+  blank.className = "drop-blank";
+  blank.setAttribute("aria-label", `Espacio ${index + 1}: sin respuesta`);
+  const clearButton = document.querySelector(`[data-fill-row="${index}"] .clear-drop`);
+  if (clearButton) clearButton.hidden = true;
+  updateWordBankState();
+  updateReviewProgress();
+}
+
+function updateWordBankState() {
+  const used = [...document.querySelectorAll("[data-fill-drop]")].map(blank => blank.dataset.value).filter(Boolean);
+  document.querySelectorAll(".word-chip").forEach(chip => {
+    const isUsed = used.includes(chip.dataset.word);
+    chip.disabled = isUsed;
+    chip.classList.toggle("is-used", isUsed);
+    chip.classList.remove("is-selected");
+  });
+  document.querySelectorAll(".drop-blank").forEach(blank => blank.classList.remove("is-ready"));
+}
+
+window.updateReviewProgress = function() {
+  const answeredTruth = document.querySelectorAll('.truefalse-row input:checked').length;
+  const answeredFill = [...document.querySelectorAll("[data-fill-drop]")].filter(blank => blank.dataset.value).length;
+  const counter = document.getElementById("reviewAnswered");
+  if (counter) counter.textContent = answeredTruth + answeredFill;
 }
 
 window.checkReviewActivities = function() {
@@ -1292,7 +1467,7 @@ window.checkReviewActivities = function() {
 
   activity.trueFalse.forEach((item, index) => {
     const selected = document.querySelector(`input[name="tf${index}"]:checked`);
-    const row = document.querySelectorAll(".truefalse-row")[index];
+    const row = document.querySelector(`[data-tf-row="${index}"]`);
     const isCorrect = selected && selected.value === String(item.answer);
     row.classList.toggle("is-correct", !!isCorrect);
     row.classList.toggle("is-wrong", !isCorrect);
@@ -1300,33 +1475,43 @@ window.checkReviewActivities = function() {
     if (isCorrect) correct++;
   });
 
-  document.querySelectorAll("[data-fill]").forEach(input => {
-    const item = activity.fill[Number(input.dataset.fill)];
-    const clean = input.value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  document.querySelectorAll("[data-fill-drop]").forEach(blank => {
+    const index = Number(blank.dataset.fillDrop);
+    const item = activity.fill[index];
+    const clean = (blank.dataset.value || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const answer = item.answer.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const isCorrect = clean === answer;
-    input.classList.toggle("is-correct", isCorrect);
-    input.classList.toggle("is-wrong", !isCorrect);
-    savedAnswers.fill[Number(input.dataset.fill)] = input.value.trim();
+    blank.classList.toggle("is-correct", isCorrect);
+    blank.classList.toggle("is-wrong", !isCorrect);
+    const row = document.querySelector(`[data-fill-row="${index}"]`);
+    row.classList.toggle("is-correct", isCorrect);
+    row.classList.toggle("is-wrong", !isCorrect);
+    savedAnswers.fill[index] = blank.dataset.value || "";
     if (isCorrect) correct++;
   });
 
-  feedback.className = `reinforcement-feedback ${correct === total ? "is-success" : "is-warning"}`;
-  feedback.textContent = correct === total
-    ? "¡Muy bien! Completaste correctamente las actividades de repaso."
-    : `Llevas ${correct} de ${total}. Revisa las pistas y vuelve a intentarlo.`;
-  if (correct === total) {
+  const wasSolved = !!activityProgressByModule[currentModuleId]?.review;
+  if (!wasSolved || correct === total) {
     activityProgressByModule[currentModuleId] = {
       ...(activityProgressByModule[currentModuleId] || {}),
       reviewAnswers: savedAnswers
     };
+    saveUserProgress();
+  }
+  feedback.className = `reinforcement-feedback ${correct === total ? "is-success" : "is-warning"}`;
+  feedback.textContent = correct === total
+    ? "¡Excelente! Completaste las dos misiones y tus respuestas quedaron guardadas."
+    : `Lograste ${correct} de ${total}. Las respuestas marcadas te muestran dónde ajustar.`;
+  if (correct === total) {
     markActivityComplete(currentModuleId, "review");
+    launchActivityCelebration("reviewActivitiesContainer");
+    const speech = document.getElementById("companionSpeech");
+    if (speech) speech.textContent = `¡Lo hiciste, ${getStudentName()}! Completaste las actividades de repaso. La evaluación de esta unidad ya está lista para ti.`;
   }
 }
 
 window.resetReviewActivities = function() {
-  clearActivityProgress(currentModuleId, "review");
-  renderReviewActivities(reviewActivitiesData[currentModuleId]);
+  renderReviewActivities(reviewActivitiesData[currentModuleId], true);
 }
 
 function openContentModal(title, bodyHtml, learnMoreResources = []) {
