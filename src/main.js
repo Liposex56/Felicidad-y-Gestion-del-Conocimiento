@@ -1540,6 +1540,11 @@ function openContentModal(title, bodyHtml, learnMoreResources = []) {
   document.getElementById("closeTheoryBtn").focus();
 }
 
+window.openTeamPhoto = function(src, name) {
+  activeTheoryResources = [];
+  openContentModal(name, `<img class="resource-image team-photo-expanded" src="${src}" alt="Fotografía ampliada de ${name}">`);
+}
+
 window.openTheory = function(modId, nodeId) {
   const node = courseData[modId].theoryNodes.find(n => n.id === nodeId);
   activeTheoryResources = [...(node.learnMoreResources || [])];
@@ -1893,8 +1898,17 @@ window.openCertificate = function(moduleName) {
     ctx.font = 'bold 25px "Inter", sans-serif'; ctx.fillStyle = '#ffffff'; ctx.fillText('FGC', canvas.width / 2, 689);
   };
 
-  drawCertificateBase();
-  finishCertificate();
+  // El diploma se genera solo después de cargar la identidad gráfica de AVE.
+  const renderCertificate = (aveLogo = null) => {
+    drawCertificateBase();
+    if (aveLogo) ctx.drawImage(aveLogo, 82, 610, 140, 140);
+    finishCertificate();
+  };
+
+  const aveLogo = new Image();
+  aveLogo.onload = () => renderCertificate(aveLogo);
+  aveLogo.onerror = () => renderCertificate();
+  aveLogo.src = "Recursos/grupo-ave-sencillo.jpeg";
 }
 function closeCertificateModal() {
   document.getElementById("certificateModal").classList.remove("is-active");
@@ -1971,6 +1985,8 @@ document.getElementById("logoutBtn").onclick = async () => {
 // ==========================================
 document.getElementById("brandHomeLink").onclick = () => { renderMap(); switchView("homeView"); };
 document.getElementById("btnBackToMap").onclick = () => { renderMap(); switchView("homeView"); };
+document.getElementById("btnGoTeam").onclick = () => switchView("teamView");
+document.getElementById("btnBackFromTeam").onclick = () => { renderMap(); switchView("homeView"); };
 document.getElementById("btnGoProfile").onclick = () => { renderProfile(); switchView("profileView"); };
 document.getElementById("btnBackFromProfile").onclick = () => { renderMap(); switchView("homeView"); };
 document.getElementById("btnStartFinalEvaluation").onclick = () => startFinalEvaluation();
@@ -2004,6 +2020,10 @@ function getAccessibilityGuide(viewId) {
     profileView: {
       src: "Recursos/guia-perfil.wav",
       name: "perfil"
+    },
+    teamView: {
+      src: "Recursos/guia-equipo-desarrollo.wav",
+      name: "equipo de desarrollo"
     }
   };
 
