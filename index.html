@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Felicidad y Gestión del Conocimiento</title>
-  <link rel="stylesheet" href="src/styles.css?v=18" />
+  <link rel="stylesheet" href="src/styles.css?v=19" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </head>
@@ -173,7 +173,9 @@
 
     <section class="team-profile-grid" aria-label="Integrantes del equipo de desarrollo">
       <article class="team-profile-card">
-        <div class="team-profile-photo team-profile-monogram" role="img" aria-label="Fotografía pendiente de PhD. Olga Najar Sanchez"><span>ON</span></div>
+        <button type="button" class="team-profile-photo" onclick="openTeamPhoto('Recursos/equipo-olga.jpeg', 'PhD. Olga Najar Sanchez')" aria-label="Ampliar fotografía de PhD. Olga Najar Sanchez">
+          <img src="Recursos/equipo-olga.jpeg" alt="PhD. Olga Najar Sanchez">
+        </button>
         <div class="team-profile-copy">
           <span class="team-order">01</span>
           <h2>PhD. Olga Najar Sanchez</h2>
@@ -380,6 +382,6 @@
   <div class="toast" id="toast"></div>
   <div class="sr-only" id="liveRegion" aria-live="polite"></div>
 
-  <script src="src/main.js?v=18"></script>
+  <script src="src/main.js?v=19"></script>
 </body>
 </html>
