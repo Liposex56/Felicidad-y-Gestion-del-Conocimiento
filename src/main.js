@@ -1862,53 +1862,128 @@ window.openCertificate = function(moduleName) {
   const ctx = canvas.getContext("2d");
   modalFocusStack.push(document.activeElement);
 
-  const finishCertificate = () => {
-    ctx.font = 'bold 50px "Inter", sans-serif'; ctx.fillStyle = '#0f6074'; ctx.textAlign = 'center';
-    ctx.fillText((currentUser?.name || "Estudiante").toUpperCase(), canvas.width / 2, 400); 
-    ctx.font = 'bold 30px "Inter", sans-serif'; ctx.fillStyle = '#157a8c';
-    ctx.fillText(`Por aprobar: ${moduleName}`, canvas.width / 2, 480);
-    const fecha = new Date().toLocaleDateString('es-CO');
-    ctx.font = 'italic 25px "Inter", sans-serif'; ctx.fillStyle = '#5f7480';
-    ctx.fillText(`Duitama, Colombia - ${fecha}`, canvas.width / 2, 550);
+  const loadCertificateImage = src => new Promise(resolve => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => resolve(null);
+    image.src = src;
+  });
+
+  const drawContainedImage = (image, x, y, width, height) => {
+    if (!image) return;
+    const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight);
+    const drawWidth = image.naturalWidth * scale;
+    const drawHeight = image.naturalHeight * scale;
+    ctx.drawImage(image, x + (width - drawWidth) / 2, y + (height - drawHeight) / 2, drawWidth, drawHeight);
+  };
+
+  const drawWrappedText = (text, centerX, startY, maxWidth, lineHeight) => {
+    const words = text.split(/\s+/);
+    const lines = [];
+    let line = "";
+    words.forEach(word => {
+      const candidate = line ? `${line} ${word}` : word;
+      if (ctx.measureText(candidate).width > maxWidth && line) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = candidate;
+      }
+    });
+    if (line) lines.push(line);
+    lines.forEach((value, index) => ctx.fillText(value, centerX, startY + index * lineHeight));
+  };
+
+  const setFittedFont = (text, maxWidth, maxSize, minSize, family) => {
+    let size = maxSize;
+    do {
+      ctx.font = `bold ${size}px ${family}`;
+      size -= 1;
+    } while (ctx.measureText(text).width > maxWidth && size >= minSize);
+  };
+
+  const renderCertificate = ([uptcLogo, licenciaturaLogo, aveLogo]) => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#fbfaf7";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Cinta lateral inspirada en la identidad institucional UPTC.
+    ctx.fillStyle = "#202122";
+    ctx.beginPath();
+    ctx.moveTo(1125, 0); ctx.lineTo(1200, 0); ctx.lineTo(1200, 850); ctx.lineTo(1090, 850);
+    ctx.bezierCurveTo(1105, 690, 1170, 555, 1140, 360);
+    ctx.bezierCurveTo(1128, 245, 1090, 110, 1040, 0);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#f8c80e";
+    ctx.beginPath();
+    ctx.moveTo(1070, 0); ctx.lineTo(1128, 0);
+    ctx.bezierCurveTo(1190, 170, 1190, 345, 1162, 495);
+    ctx.bezierCurveTo(1135, 640, 1075, 735, 1060, 850);
+    ctx.lineTo(1008, 850);
+    ctx.bezierCurveTo(1028, 706, 1090, 615, 1113, 480);
+    ctx.bezierCurveTo(1138, 327, 1126, 168, 1070, 0);
+    ctx.closePath(); ctx.fill();
+
+    ctx.strokeStyle = "#f2c319";
+    ctx.lineWidth = 10;
+    ctx.strokeRect(38, 38, 1025, 774);
+    ctx.strokeStyle = "#175f69";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(52, 52, 995, 746);
+
+    drawContainedImage(uptcLogo, 78, 66, 260, 92);
+    drawContainedImage(licenciaturaLogo, 390, 66, 350, 92);
+    drawContainedImage(aveLogo, 800, 58, 108, 108);
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#102d35";
+    ctx.font = 'bold 34px Georgia, "Times New Roman", serif';
+    ctx.fillText("Universidad Pedagógica y Tecnológica de Colombia", 550, 220);
+    ctx.fillStyle = "#175f69";
+    ctx.font = 'bold 20px Georgia, "Times New Roman", serif';
+    ctx.fillText("Grupo AVE | Felicidad y Gestión del Conocimiento", 550, 258);
+
+    ctx.fillStyle = "#b68a22";
+    ctx.font = 'bold 38px Georgia, "Times New Roman", serif';
+    ctx.fillText("CERTIFICAN QUE", 550, 330);
+    ctx.fillStyle = "#175f69";
+    const studentName = (currentUser?.name || "Estudiante").toUpperCase();
+    setFittedFont(studentName, 720, 46, 28, '"Inter", sans-serif');
+    ctx.fillText(studentName, 550, 410);
+    ctx.strokeStyle = "#175f69";
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(235, 442); ctx.lineTo(865, 442); ctx.stroke();
+
+    ctx.fillStyle = "#b68a22";
+    ctx.font = 'bold 27px Georgia, "Times New Roman", serif';
+    ctx.fillText("APROBÓ LA UNIDAD:", 550, 500);
+    ctx.fillStyle = "#175f69";
+    ctx.font = 'bold 31px "Inter", sans-serif';
+    drawWrappedText(moduleName.toUpperCase(), 550, 555, 700, 38);
+
+    const fecha = new Date().toLocaleDateString("es-CO");
+    ctx.fillStyle = "#263840";
+    ctx.font = '22px "Inter", sans-serif';
+    ctx.fillText(`Fecha de emisión: ${fecha}`, 550, 690);
+    ctx.font = 'italic 18px "Inter", sans-serif';
+    ctx.fillStyle = "#5f6d73";
+    ctx.fillText("Duitama, Colombia", 550, 727);
 
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF("landscape", "px", [1200, 850]);
     pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 1200, 850);
-    
     document.getElementById("certPreviewFrame").src = URL.createObjectURL(pdf.output("blob"));
     document.getElementById("certificateModal").classList.add("is-active");
     syncModalState();
     document.getElementById("closeCertBtn").focus();
-    document.getElementById("downloadCertBtn").onclick = () => pdf.save(`Cert_${moduleName.replace(/\s+/g, '')}.pdf`);
+    document.getElementById("downloadCertBtn").onclick = () => pdf.save(`Cert_${moduleName.replace(/\s+/g, "")}.pdf`);
   };
 
-  const drawCertificateBase = () => {
-    ctx.fillStyle = '#f7fbfc'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = '#157a8c'; ctx.lineWidth = 12; ctx.strokeRect(34, 34, canvas.width - 68, canvas.height - 68);
-    ctx.strokeStyle = '#d2b24b'; ctx.lineWidth = 3; ctx.strokeRect(54, 54, canvas.width - 108, canvas.height - 108);
-    ctx.fillStyle = '#0f6074'; ctx.fillRect(70, 75, canvas.width - 140, 12);
-    ctx.font = 'bold 54px "Inter", sans-serif'; ctx.fillStyle = '#0f6074'; ctx.textAlign = 'center';
-    ctx.fillText('CERTIFICADO DE APROBACIÓN', canvas.width / 2, 205);
-    ctx.font = '26px "Inter", sans-serif'; ctx.fillStyle = '#5f7480';
-    ctx.fillText('Felicidad y Gestión del Conocimiento', canvas.width / 2, 258);
-    ctx.font = '22px "Inter", sans-serif';
-    ctx.fillText('Se otorga a', canvas.width / 2, 326);
-    ctx.beginPath(); ctx.arc(canvas.width / 2, 680, 62, 0, Math.PI * 2); ctx.fillStyle = '#157a8c'; ctx.fill();
-    ctx.beginPath(); ctx.arc(canvas.width / 2, 680, 48, 0, Math.PI * 2); ctx.strokeStyle = '#d2b24b'; ctx.lineWidth = 5; ctx.stroke();
-    ctx.font = 'bold 25px "Inter", sans-serif'; ctx.fillStyle = '#ffffff'; ctx.fillText('FGC', canvas.width / 2, 689);
-  };
-
-  // El diploma se genera solo después de cargar la identidad gráfica de AVE.
-  const renderCertificate = (aveLogo = null) => {
-    drawCertificateBase();
-    if (aveLogo) ctx.drawImage(aveLogo, 82, 610, 140, 140);
-    finishCertificate();
-  };
-
-  const aveLogo = new Image();
-  aveLogo.onload = () => renderCertificate(aveLogo);
-  aveLogo.onerror = () => renderCertificate();
-  aveLogo.src = "Recursos/grupo-ave-sencillo.jpeg";
+  Promise.all([
+    loadCertificateImage("Recursos/Logo_de_la_UPTC.svg.png"),
+    loadCertificateImage("Recursos/Logo LI.png"),
+    loadCertificateImage("Recursos/grupo-ave-sencillo.jpeg")
+  ]).then(renderCertificate);
 }
 function closeCertificateModal() {
   document.getElementById("certificateModal").classList.remove("is-active");

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Felicidad y Gestión del Conocimiento</title>
-  <link rel="stylesheet" href="src/styles.css?v=19" />
+  <link rel="stylesheet" href="src/styles.css?v=23" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </head>
@@ -162,48 +162,56 @@
   <!-- VISTA 3: EQUIPO DE DESARROLLO -->
   <main id="teamView" class="view app-content team-page" tabindex="-1">
     <button class="space-back-button" id="btnBackFromTeam">← Volver al mapa</button>
-    <header class="team-page-heading">
-      <div>
-        <p class="eyebrow">Créditos académicos</p>
-        <h1>Equipo de desarrollo</h1>
-        <p>Investigación, pedagogía y tecnología al servicio de una experiencia universitaria centrada en el bienestar y el conocimiento.</p>
-      </div>
-      <img src="Recursos/grupo-ave-completo.jpeg" alt="Grupo de Investigación AVE, Ambientes Virtuales Educativos">
-    </header>
+    <section class="team-showcase">
+      <header class="team-page-heading">
+        <div>
+          <p class="eyebrow">Créditos académicos</p>
+          <h1>Equipo de desarrollo</h1>
+          <p>Investigación, pedagogía y tecnología al servicio del bienestar y la gestión del conocimiento.</p>
+        </div>
+        <img src="Recursos/grupo-ave-completo.jpeg" alt="Grupo de Investigación AVE, Ambientes Virtuales Educativos">
+      </header>
 
-    <section class="team-profile-grid" aria-label="Integrantes del equipo de desarrollo">
+      <section class="team-profile-grid" aria-label="Integrantes del equipo de desarrollo">
       <article class="team-profile-card">
-        <button type="button" class="team-profile-photo" onclick="openTeamPhoto('Recursos/equipo-olga.jpeg', 'PhD. Olga Najar Sanchez')" aria-label="Ampliar fotografía de PhD. Olga Najar Sanchez">
+        <button type="button" class="team-profile-photo team-photo-olga" onclick="openTeamPhoto('Recursos/equipo-olga.jpeg', 'PhD. Olga Najar Sanchez')" aria-label="Ampliar fotografía de PhD. Olga Najar Sanchez">
           <img src="Recursos/equipo-olga.jpeg" alt="PhD. Olga Najar Sanchez">
         </button>
         <div class="team-profile-copy">
           <span class="team-order">01</span>
           <h2>PhD. Olga Najar Sanchez</h2>
-          <p>Doctorado en Formación en Sociedad del Conocimiento.</p>
+          <strong class="team-role">Sociedad del Conocimiento</strong>
+          <p class="team-credential">Doctorado en Formación en Sociedad del Conocimiento.</p>
+          <p class="team-institution">Universidad Pedagógica y Tecnológica de Colombia</p>
         </div>
       </article>
 
-      <article class="team-profile-card">
-        <button type="button" class="team-profile-photo" onclick="openTeamPhoto('Recursos/equipo-yenny.jpg', 'Dr. Yenny Carolina Riaño Castellanos')" aria-label="Ampliar fotografía de Dr. Yenny Carolina Riaño Castellanos">
+      <article class="team-profile-card is-featured">
+        <button type="button" class="team-profile-photo team-photo-yenny" onclick="openTeamPhoto('Recursos/equipo-yenny.jpg', 'Dr. Yenny Carolina Riaño Castellanos')" aria-label="Ampliar fotografía de Dr. Yenny Carolina Riaño Castellanos">
           <img src="Recursos/equipo-yenny.jpg" alt="Dr. Yenny Carolina Riaño Castellanos">
         </button>
         <div class="team-profile-copy">
           <span class="team-order">02</span>
           <h2>Dr. Yenny Carolina Riaño Castellanos</h2>
-          <p>Doctoranda en Ciencias de la Educación, con énfasis en investigación, evaluación y formulación de proyectos educativos.</p>
+          <strong class="team-role">Directora del proyecto</strong>
+          <p class="team-credential">Doctoranda en Ciencias de la Educación, con énfasis en investigación, evaluación y formulación de proyectos educativos.</p>
+          <p class="team-institution">Universidad Pedagógica y Tecnológica de Colombia</p>
         </div>
       </article>
 
       <article class="team-profile-card">
-        <button type="button" class="team-profile-photo" onclick="openTeamPhoto('Recursos/equipo-milena.jpeg', 'Dr. Milena Rocío Castillo Garcia')" aria-label="Ampliar fotografía de Dr. Milena Rocío Castillo Garcia">
+        <button type="button" class="team-profile-photo team-photo-milena" onclick="openTeamPhoto('Recursos/equipo-milena.jpeg', 'Dr. Milena Rocío Castillo Garcia')" aria-label="Ampliar fotografía de Dr. Milena Rocío Castillo Garcia">
           <img src="Recursos/equipo-milena.jpeg" alt="Dr. Milena Rocío Castillo Garcia">
         </button>
         <div class="team-profile-copy">
           <span class="team-order">03</span>
           <h2>Dr. Milena Rocío Castillo Garcia</h2>
-          <p>Doctoranda en Pedagogía y Didáctica de la UPTC.</p>
+          <strong class="team-role">Pedagogía y Didáctica</strong>
+          <p class="team-credential">Doctoranda en Pedagogía y Didáctica de la UPTC.</p>
+          <p class="team-institution">Universidad Pedagógica y Tecnológica de Colombia</p>
         </div>
       </article>
+      </section>
     </section>
   </main>
 
@@ -382,6 +390,6 @@
   <div class="toast" id="toast"></div>
   <div class="sr-only" id="liveRegion" aria-live="polite"></div>
 
-  <script src="src/main.js?v=19"></script>
+  <script src="src/main.js?v=23"></script>
 </body>
 </html>
