@@ -523,6 +523,7 @@ let activityProgressByModule = {};
 let quizResultsByModule = {};
 let certificates = [];
 let finalEvaluationResult = null;
+let profilePictureDataUrl = null;
 let progressUpdatedAt = null;
 let cloudProgressReady = false;
 let cloudSyncTimer = null;
@@ -606,6 +607,13 @@ function loadUserProgress() {
   quizResultsByModule = safeParseStoredJSON(localStorage.getItem(userKey("fgc_quiz_results")), {});
   certificates = safeParseStoredJSON(localStorage.getItem(userKey("fgc_certificates")), []);
   finalEvaluationResult = safeParseStoredJSON(localStorage.getItem(userKey("fgc_final_evaluation")), null);
+  profilePictureDataUrl = localStorage.getItem(userKey("fgc_profile_pic")) || null;
+  const legacyPicture = localStorage.getItem("fgc_profile_pic");
+  if (!profilePictureDataUrl && legacyPicture) {
+    profilePictureDataUrl = legacyPicture;
+    localStorage.setItem(userKey("fgc_profile_pic"), legacyPicture);
+    localStorage.removeItem("fgc_profile_pic");
+  }
   progressUpdatedAt = localStorage.getItem(userKey("fgc_progress_updated_at")) || null;
 }
 
@@ -622,6 +630,11 @@ function writeLocalProgress() {
   localStorage.setItem(userKey("fgc_quiz_results"), JSON.stringify(quizResultsByModule));
   localStorage.setItem(userKey("fgc_certificates"), JSON.stringify(certificates));
   localStorage.setItem(userKey("fgc_final_evaluation"), JSON.stringify(finalEvaluationResult));
+  if (profilePictureDataUrl) {
+    localStorage.setItem(userKey("fgc_profile_pic"), profilePictureDataUrl);
+  } else {
+    localStorage.removeItem(userKey("fgc_profile_pic"));
+  }
   if (progressUpdatedAt) {
     localStorage.setItem(userKey("fgc_progress_updated_at"), progressUpdatedAt);
   }
@@ -630,6 +643,11 @@ function writeLocalProgress() {
 function normalizeProgressSnapshot(snapshot) {
   const value = snapshot && typeof snapshot === "object" ? snapshot : {};
   const objectOrEmpty = input => input && typeof input === "object" && !Array.isArray(input) ? input : {};
+  const validProfilePicture = typeof value.profilePictureDataUrl === "string"
+    && /^data:image\/(?:jpeg|png|webp);base64,/i.test(value.profilePictureDataUrl)
+    && value.profilePictureDataUrl.length <= 250000
+    ? value.profilePictureDataUrl
+    : null;
   return {
     version: 1,
     updatedAt: typeof value.updatedAt === "string" ? value.updatedAt : null,
@@ -640,6 +658,7 @@ function normalizeProgressSnapshot(snapshot) {
     activityProgressByModule: objectOrEmpty(value.activityProgressByModule),
     quizResultsByModule: objectOrEmpty(value.quizResultsByModule),
     certificates: Array.isArray(value.certificates) ? value.certificates : [],
+    profilePictureDataUrl: validProfilePicture,
     finalEvaluationResult: value.finalEvaluationResult && typeof value.finalEvaluationResult === "object"
       ? value.finalEvaluationResult
       : null
@@ -656,6 +675,7 @@ function buildProgressSnapshot(updatedAt = progressUpdatedAt) {
     activityProgressByModule,
     quizResultsByModule,
     certificates,
+    profilePictureDataUrl,
     finalEvaluationResult
   });
 }
@@ -669,6 +689,7 @@ function hasMeaningfulProgress(snapshot) {
     || Object.keys(value.activityProgressByModule).length > 0
     || Object.keys(value.quizResultsByModule).length > 0
     || value.certificates.length > 0
+    || !!value.profilePictureDataUrl
     || !!value.finalEvaluationResult;
 }
 
@@ -696,6 +717,13 @@ function mergeActivityProgress(localProgress, cloudProgress) {
       memory: !!(cloud.memory || local.memory),
       review: !!(cloud.review || local.review)
     };
+    const localMemoryTime = Date.parse(local.memoryStats?.updatedAt || "") || 0;
+    const cloudMemoryTime = Date.parse(cloud.memoryStats?.updatedAt || "") || 0;
+    if (local.memoryStats || cloud.memoryStats) {
+      merged[moduleId].memoryStats = localMemoryTime >= cloudMemoryTime
+        ? local.memoryStats || cloud.memoryStats
+        : cloud.memoryStats;
+    }
     if (!local.reviewAnswers && cloud.reviewAnswers) {
       merged[moduleId].reviewAnswers = cloud.reviewAnswers;
     }
@@ -743,6 +771,7 @@ function mergeProgressSnapshots(localSnapshot, cloudSnapshot) {
     activityProgressByModule: mergeActivityProgress(local.activityProgressByModule, cloud.activityProgressByModule),
     quizResultsByModule: mergeQuizResults(local.quizResultsByModule, cloud.quizResultsByModule),
     certificates: mergeCertificates(local.certificates, cloud.certificates),
+    profilePictureDataUrl: newer.profilePictureDataUrl || older.profilePictureDataUrl,
     finalEvaluationResult: localFinalScore >= cloudFinalScore
       ? local.finalEvaluationResult || cloud.finalEvaluationResult
       : cloud.finalEvaluationResult
@@ -758,6 +787,7 @@ function applyProgressSnapshot(snapshot) {
   activityProgressByModule = value.activityProgressByModule;
   quizResultsByModule = value.quizResultsByModule;
   certificates = value.certificates;
+  profilePictureDataUrl = value.profilePictureDataUrl || profilePictureDataUrl;
   finalEvaluationResult = value.finalEvaluationResult;
   progressUpdatedAt = value.updatedAt || new Date().toISOString();
   writeLocalProgress();
@@ -1478,7 +1508,9 @@ function getSpritePosition(index) {
 function renderReinforcement(activity, practiceMode = false) {
   const container = document.getElementById("reinforcementContainer");
   if (!container || !activity) return;
-  const progressSolved = !!activityProgressByModule[currentModuleId]?.memory;
+  const moduleActivityProgress = activityProgressByModule[currentModuleId] || {};
+  const progressSolved = !!moduleActivityProgress.memory;
+  const savedStats = moduleActivityProgress.memoryStats || {};
   const isSolved = progressSolved && !practiceMode;
   const baseCards = activity.pairs.flatMap((pair, index) => [
     { id: `c-${index}`, pairId: index, label: pair.concept, kind: "concept" },
@@ -1488,8 +1520,16 @@ function renderReinforcement(activity, practiceMode = false) {
   reinforcementCards = (isSolved ? baseCards : shuffleArray(baseCards)).map((card, index) => ({ ...card, cardId: `card-${index}` }));
   flippedReinforcementCards = [];
   matchedReinforcementPairs = isSolved ? activity.pairs.length : 0;
-  reinforcementAttempts = 0;
+  reinforcementAttempts = isSolved ? Math.max(0, Number(savedStats.attempts) || 0) : 0;
   reinforcementStreak = 0;
+  const savedAccuracy = isSolved && Number.isFinite(Number(savedStats.accuracy))
+    ? `${Math.max(0, Math.min(100, Math.round(Number(savedStats.accuracy))))}%`
+    : "--";
+  const completedStatsMessage = isSolved && reinforcementAttempts > 0
+    ? `Último resultado guardado: ${reinforcementAttempts} intentos y ${savedAccuracy} de precisión.`
+    : isSolved
+      ? "Actividad completada antes de activar las métricas. Reinicia para registrar intentos y precisión."
+      : "";
 
   container.innerHTML = `
     <div class="activity-command-bar">
@@ -1500,8 +1540,8 @@ function renderReinforcement(activity, practiceMode = false) {
       </div>
       <div class="activity-stats" aria-label="Progreso de la actividad">
         <span><strong id="memoryCounter">${matchedReinforcementPairs}/${activity.pairs.length}</strong> parejas</span>
-        <span><strong id="memoryAttempts">0</strong> intentos</span>
-        <span><strong id="memoryAccuracy">--</strong> precisión</span>
+        <span><strong id="memoryAttempts">${reinforcementAttempts || "--"}</strong> intentos</span>
+        <span><strong id="memoryAccuracy">${savedAccuracy}</strong> precisión</span>
       </div>
     </div>
     <div class="memory-grid" role="group" aria-label="Tablero de parejas">
@@ -1528,8 +1568,30 @@ function renderReinforcement(activity, practiceMode = false) {
       <button type="button" class="ghost-button" onclick="resetReinforcement()">Reiniciar y mezclar</button>
       <span class="activity-tip">Las imágenes aparecen solo en los conceptos. Para acertar debes interpretar cada situación.</span>
     </div>
-    <p class="reinforcement-feedback ${isSolved ? 'is-success' : ''}" id="reinforcementFeedback" role="status">${isSolved ? 'Actividad resuelta. Tus parejas permanecen guardadas; puedes mezclarlas y practicar de nuevo.' : practiceMode ? 'Nueva ronda preparada. Tu logro anterior sigue guardado.' : 'Selecciona dos cartas para comenzar.'}</p>
+    <p class="reinforcement-feedback ${isSolved ? 'is-success' : ''}" id="reinforcementFeedback" role="status">${isSolved ? completedStatsMessage : practiceMode ? 'Nueva ronda preparada. Tu logro anterior sigue guardado; esta ronda actualizará tus métricas si la completas.' : 'Selecciona dos cartas para comenzar.'}</p>
   `;
+}
+
+function saveReinforcementStats(totalPairs) {
+  const accuracy = reinforcementAttempts > 0
+    ? Math.round((matchedReinforcementPairs / reinforcementAttempts) * 100)
+    : 0;
+  const previous = activityProgressByModule[currentModuleId]?.memoryStats || {};
+  activityProgressByModule[currentModuleId] = {
+    ...(activityProgressByModule[currentModuleId] || {}),
+    memoryStats: {
+      attempts: reinforcementAttempts,
+      matches: matchedReinforcementPairs,
+      totalPairs,
+      accuracy,
+      bestAttempts: previous.bestAttempts
+        ? Math.min(Number(previous.bestAttempts), reinforcementAttempts)
+        : reinforcementAttempts,
+      bestAccuracy: Math.max(Number(previous.bestAccuracy) || 0, accuracy),
+      updatedAt: new Date().toISOString()
+    }
+  };
+  saveUserProgress();
 }
 
 window.flipReinforcementCard = function(cardId) {
@@ -1569,6 +1631,7 @@ window.flipReinforcementCard = function(cardId) {
         ? `${performance}: completaste el reto en ${reinforcementAttempts} intentos.`
         : `¡Pareja correcta! Llevas una racha de ${reinforcementStreak}.`;
       if (matchedReinforcementPairs === activity.pairs.length) {
+        saveReinforcementStats(activity.pairs.length);
         markActivityComplete(currentModuleId, "memory");
         launchActivityCelebration("reinforcementContainer");
         const speech = document.getElementById("companionSpeech");
@@ -2125,15 +2188,10 @@ function renderProfile() {
   document.getElementById("profileNameDisplay").textContent = currentUser?.name || "Estudiante";
   document.getElementById("profileEmailDisplay").textContent = currentUser?.email || "correo@uptc.edu.co";
   setCloudSyncState(cloudSyncState, cloudSyncMessage);
-  
-  let pic = localStorage.getItem(userKey("fgc_profile_pic"));
-  const legacyPic = localStorage.getItem("fgc_profile_pic");
-  if (!pic && legacyPic) {
-    pic = legacyPic;
-    localStorage.setItem(userKey("fgc_profile_pic"), legacyPic);
-    localStorage.removeItem("fgc_profile_pic");
-  }
-  document.getElementById("profileAvatarDisplay").innerHTML = pic ? `<img src="${pic}" alt="Foto de perfil de ${getStudentName()}">` : `<span aria-hidden="true">👤</span>`;
+
+  document.getElementById("profileAvatarDisplay").innerHTML = profilePictureDataUrl
+    ? `<img src="${profilePictureDataUrl}" alt="Foto de perfil de ${getStudentName()}">`
+    : `<span aria-hidden="true">👤</span>`;
 
   const certContainer = document.getElementById("profileCertCard");
   if(certificates.length === 0) {
@@ -2148,12 +2206,65 @@ function renderProfile() {
   }
 }
 
-document.getElementById("profileImageInput").onchange = (e) => {
-  const file = e.target.files[0];
-  if(file) {
+function compressProfilePicture(file) {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => { localStorage.setItem(userKey("fgc_profile_pic"), reader.result); renderProfile(); };
+    reader.onerror = () => reject(new Error("No fue posible leer la imagen."));
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = () => reject(new Error("El archivo seleccionado no es una imagen válida."));
+      image.onload = () => {
+        const size = 320;
+        const sourceSize = Math.min(image.naturalWidth, image.naturalHeight);
+        const sourceX = Math.max(0, (image.naturalWidth - sourceSize) / 2);
+        const sourceY = Math.max(0, (image.naturalHeight - sourceSize) / 2);
+        const canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+        const context = canvas.getContext("2d");
+        context.drawImage(image, sourceX, sourceY, sourceSize, sourceSize, 0, 0, size, size);
+
+        let result = canvas.toDataURL("image/jpeg", 0.78);
+        if (result.length > 180000) result = canvas.toDataURL("image/jpeg", 0.62);
+        if (result.length > 250000) {
+          reject(new Error("La imagen sigue siendo demasiado pesada. Elige otra fotografía."));
+          return;
+        }
+        resolve(result);
+      };
+      image.src = reader.result;
+    };
     reader.readAsDataURL(file);
+  });
+}
+
+document.getElementById("profileImageInput").onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith("image/")) {
+    showToast("Selecciona un archivo de imagen.");
+    return;
+  }
+
+  try {
+    showToast("Preparando y guardando tu foto...");
+    profilePictureDataUrl = await compressProfilePicture(file);
+    saveUserProgress();
+    renderProfile();
+    if (cloudProgressReady && currentUser && supabaseClient) {
+      window.clearTimeout(cloudSyncTimer);
+      cloudSyncTimer = null;
+      await persistProgressToCloud(buildProgressSnapshot());
+      showToast("Foto guardada en tu cuenta y disponible en otros dispositivos.");
+    } else {
+      setCloudSyncState("error", "La foto quedó en este navegador. Pulsa Sincronizar ahora cuando tengas conexión.");
+      showToast("Foto guardada en este navegador. Sincronízala cuando tengas conexión.");
+    }
+  } catch (error) {
+    console.error("No fue posible guardar la foto de perfil.", error);
+    showToast(error.message || "No fue posible guardar la foto.");
+  } finally {
+    e.target.value = "";
   }
 }
 
