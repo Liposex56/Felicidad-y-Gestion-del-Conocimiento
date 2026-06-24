@@ -252,6 +252,18 @@ input { width: 100%; padding: 12px; border-radius: var(--radius); border: 1px so
 .profile-avatar-large { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--green)); margin: 0 auto 20px; display: grid; place-items: center; font-size: 3rem; font-weight: bold; color: #fff; overflow: hidden; border: 4px solid #34f5e1; }
 .profile-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
 .profile-content { background: rgba(15, 25, 55, 0.8); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+.profile-content-heading { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(360px, 0.9fr); gap: 22px; align-items: start; margin-bottom: 22px; }
+.profile-content-heading h2 { color: var(--text); }
+.cloud-sync-panel { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 14px; border: 1px solid rgba(67, 215, 189, 0.28); border-radius: var(--radius); background: rgba(7, 18, 37, 0.76); }
+.cloud-sync-indicator { width: 12px; height: 12px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 14px rgba(255, 209, 102, 0.46); }
+.cloud-sync-panel strong { display: block; color: var(--text); font-size: 0.88rem; }
+.cloud-sync-panel p { margin-top: 3px; color: var(--muted); font-size: 0.78rem; line-height: 1.35; }
+.cloud-sync-panel[data-state="synced"] .cloud-sync-indicator { background: var(--green); box-shadow: 0 0 14px rgba(101, 193, 140, 0.55); }
+.cloud-sync-panel[data-state="syncing"] .cloud-sync-indicator { background: var(--teal); animation: neonPulse 1.3s ease-in-out infinite; }
+.cloud-sync-panel[data-state="error"] { border-color: rgba(255, 127, 111, 0.45); }
+.cloud-sync-panel[data-state="error"] .cloud-sync-indicator { background: var(--coral); box-shadow: 0 0 14px rgba(255, 127, 111, 0.5); }
+.cloud-sync-button { padding: 9px 12px; white-space: nowrap; font-size: 0.8rem; }
+.cloud-sync-button:disabled { cursor: wait; opacity: 0.65; }
 .cert-card { background: rgba(31, 211, 207, 0.1); border: 1px dashed #34f5e1; padding: 20px; border-radius: 16px; margin-top: 20px; }
 
 /* MODALES */
@@ -282,6 +294,7 @@ input { width: 100%; padding: 12px; border-radius: var(--radius); border: 1px so
   .welcome-layout { grid-template-columns: 1fr; }
   .mindmap-node { width: 100%; }
   .profile-layout { grid-template-columns: 1fr; }
+  .profile-content-heading { grid-template-columns: 1fr; }
   .media-grid { grid-template-columns: 1fr; }
   .mission-status { align-items: flex-start; padding: 22px; }
   .module-side-companion { position: static; width: 100%; display: flex; gap: 14px; align-items: center; margin: 0 0 20px; }
@@ -669,6 +682,11 @@ body.modal-open { overflow: hidden; }
   .certificate-list-item { align-items: stretch; flex-direction: column; }
   .accessibility-guide-button { left: 12px; bottom: 12px; max-width: calc(100vw - 24px); font-size: 0.78rem; }
   .toast { right: 12px; bottom: 70px; max-width: calc(100vw - 24px); }
+}
+
+@media (max-width: 620px) {
+  .cloud-sync-panel { grid-template-columns: auto minmax(0, 1fr); }
+  .cloud-sync-button { grid-column: 1 / -1; width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
