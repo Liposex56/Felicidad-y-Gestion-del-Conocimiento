@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Felicidad y Gestión del Conocimiento</title>
-  <link rel="stylesheet" href="src/styles.css?v=24" />
+  <link rel="stylesheet" href="src/styles.css?v=25" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </head>
@@ -230,7 +230,20 @@
         <button class="start-button" id="btnBackFromProfile" style="margin-top:20px; width:100%;">Volver al Mapa</button>
       </aside>
       <section class="profile-content">
-        <h2 style="color:#fff;">Mis Certificados</h2>
+        <div class="profile-content-heading">
+          <div>
+            <span class="eyebrow">Progreso académico</span>
+            <h2>Mis Certificados</h2>
+          </div>
+          <aside class="cloud-sync-panel" id="cloudSyncPanel" data-state="local" aria-labelledby="cloudSyncTitle">
+            <span class="cloud-sync-indicator" aria-hidden="true"></span>
+            <div>
+              <strong id="cloudSyncTitle">Sincronización de la cuenta</strong>
+              <p id="cloudSyncStatus" role="status">Comprobando el progreso guardado...</p>
+            </div>
+            <button type="button" class="ghost-button cloud-sync-button" id="btnSyncProgress">Sincronizar ahora</button>
+          </aside>
+        </div>
         <div class="cert-card" id="profileCertCard">
           <h3 style="color:#34f5e1;">Aún no tienes certificados</h3>
           <p style="color:#aeb9d3;">Completa las evaluaciones con 80% para obtener tus certificados.</p>
@@ -390,6 +403,6 @@
   <div class="toast" id="toast"></div>
   <div class="sr-only" id="liveRegion" aria-live="polite"></div>
 
-  <script src="src/main.js?v=24"></script>
+  <script src="src/main.js?v=25"></script>
 </body>
 </html>
