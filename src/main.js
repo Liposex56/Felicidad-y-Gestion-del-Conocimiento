@@ -528,6 +528,8 @@ let cloudProgressReady = false;
 let cloudSyncTimer = null;
 let cloudSyncPromise = Promise.resolve();
 let cloudSyncWarningShown = false;
+let cloudSyncState = "local";
+let cloudSyncMessage = "El progreso todavía no se ha confirmado en la nube.";
 let currentFinalQuestions = [];
 let reinforcementCards = [];
 let flippedReinforcementCards = [];
@@ -561,6 +563,20 @@ function showToast(msg) {
   const liveRegion = document.getElementById("liveRegion");
   if (liveRegion) liveRegion.textContent = msg;
   setTimeout(() => t.classList.remove("is-visible"), 3500);
+}
+
+function setCloudSyncState(state, message) {
+  cloudSyncState = state;
+  cloudSyncMessage = message;
+  const panel = document.getElementById("cloudSyncPanel");
+  const status = document.getElementById("cloudSyncStatus");
+  const button = document.getElementById("btnSyncProgress");
+  if (panel) panel.dataset.state = state;
+  if (status) status.textContent = message;
+  if (button) {
+    button.disabled = state === "syncing";
+    button.textContent = state === "syncing" ? "Sincronizando..." : "Sincronizar ahora";
+  }
 }
 
 function getUserStorageSuffix() {
@@ -749,15 +765,18 @@ function applyProgressSnapshot(snapshot) {
 
 async function persistProgressToCloud(snapshot = buildProgressSnapshot()) {
   if (!supabaseClient || !currentUser) return;
+  setCloudSyncState("syncing", "Guardando tus logros en la cuenta...");
   const { error } = await supabaseClient.auth.updateUser({
     data: { [CLOUD_PROGRESS_FIELD]: snapshot }
   });
   if (error) throw error;
   cloudSyncWarningShown = false;
+  setCloudSyncState("synced", "Progreso guardado en la nube y disponible en otros dispositivos.");
 }
 
 function reportCloudSyncError(error) {
   console.error("No fue posible sincronizar el progreso con la nube.", error);
+  setCloudSyncState("error", "Solo está guardado en este navegador. Revisa Internet y vuelve a sincronizar.");
   if (!cloudSyncWarningShown) {
     cloudSyncWarningShown = true;
     showToast("Tu avance quedó guardado en este equipo. Se sincronizará cuando vuelva la conexión.");
@@ -766,6 +785,7 @@ function reportCloudSyncError(error) {
 
 function queueCloudProgressSync() {
   if (!cloudProgressReady || !currentUser || !supabaseClient) return;
+  setCloudSyncState("syncing", "Hay cambios pendientes de guardar en la cuenta...");
   window.clearTimeout(cloudSyncTimer);
   cloudSyncTimer = window.setTimeout(() => {
     cloudSyncTimer = null;
@@ -795,6 +815,7 @@ async function flushCloudProgressSync() {
 
 async function syncProgressWithCloud(authUser) {
   cloudProgressReady = false;
+  setCloudSyncState("syncing", "Comparando este navegador con el progreso de tu cuenta...");
   loadUserProgress();
   const localSnapshot = buildProgressSnapshot(progressUpdatedAt);
   const cloudSnapshot = normalizeProgressSnapshot(authUser?.user_metadata?.[CLOUD_PROGRESS_FIELD]);
@@ -803,6 +824,7 @@ async function syncProgressWithCloud(authUser) {
 
   if (!localHasProgress && !cloudHasProgress) {
     cloudProgressReady = true;
+    setCloudSyncState("synced", "Cuenta conectada. Aún no hay logros para sincronizar.");
     return;
   }
 
@@ -812,6 +834,26 @@ async function syncProgressWithCloud(authUser) {
 
   try {
     await persistProgressToCloud(buildProgressSnapshot());
+  } catch (error) {
+    reportCloudSyncError(error);
+  }
+}
+
+async function syncProgressNow() {
+  if (!currentUser || !supabaseClient) {
+    setCloudSyncState("error", "Inicia sesión para sincronizar el progreso.");
+    return;
+  }
+  try {
+    setCloudSyncState("syncing", "Leyendo la copia local y la copia de tu cuenta...");
+    const { data, error } = await supabaseClient.auth.getUser();
+    if (error) throw error;
+    if (!data.user) throw new Error("No hay una sesión activa.");
+    await syncProgressWithCloud(data.user);
+    renderAvatars();
+    renderMap();
+    renderProfile();
+    showToast("Progreso sincronizado correctamente.");
   } catch (error) {
     reportCloudSyncError(error);
   }
@@ -2082,6 +2124,7 @@ function saveCertificate(modId, modTitle) {
 function renderProfile() {
   document.getElementById("profileNameDisplay").textContent = currentUser?.name || "Estudiante";
   document.getElementById("profileEmailDisplay").textContent = currentUser?.email || "correo@uptc.edu.co";
+  setCloudSyncState(cloudSyncState, cloudSyncMessage);
   
   let pic = localStorage.getItem(userKey("fgc_profile_pic"));
   const legacyPic = localStorage.getItem("fgc_profile_pic");
@@ -2331,6 +2374,7 @@ document.getElementById("btnGoTeam").onclick = () => switchView("teamView");
 document.getElementById("btnBackFromTeam").onclick = () => { renderMap(); switchView("homeView"); };
 document.getElementById("btnGoProfile").onclick = () => { renderProfile(); switchView("profileView"); };
 document.getElementById("btnBackFromProfile").onclick = () => { renderMap(); switchView("homeView"); };
+document.getElementById("btnSyncProgress").onclick = () => syncProgressNow();
 document.getElementById("btnStartFinalEvaluation").onclick = () => startFinalEvaluation();
 document.getElementById("btnContinueJourney").onclick = () => {
   if (areCoreModulesApproved()) {
@@ -2442,6 +2486,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     } catch (error) {
       console.warn("La aplicación inició con la copia local del progreso.", error);
       cloudProgressReady = false;
+      setCloudSyncState("error", "La sesión abrió con la copia de este navegador. Pulsa Sincronizar ahora cuando tengas conexión.");
     }
     document.getElementById("appHeader").hidden = false;
     setHeaderIdentity();
