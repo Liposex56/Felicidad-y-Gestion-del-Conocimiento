@@ -509,6 +509,8 @@ const reviewActivitiesData = {
 const SUPABASE_URL = "https://bxxudrezbaxrmwekeyoe.supabase.co";
 const SUPABASE_KEY = "sb_publishable_SnBuzPXugGRag9uAP4NbpQ_HzPhP6BK";
 const supabaseClient = window.supabase?.createClient(SUPABASE_URL, SUPABASE_KEY);
+const CLOUD_PROGRESS_FIELD = "fgc_course_progress_v1";
+const CLOUD_SYNC_DELAY = 650;
 
 let currentUser = JSON.parse(localStorage.getItem("fgc_currentUser")) || null;
 let highestUnlocked = 1;
@@ -520,6 +522,12 @@ let viewedResourcesByModule = {};
 let activityProgressByModule = {};
 let quizResultsByModule = {};
 let certificates = [];
+let finalEvaluationResult = null;
+let progressUpdatedAt = null;
+let cloudProgressReady = false;
+let cloudSyncTimer = null;
+let cloudSyncPromise = Promise.resolve();
+let cloudSyncWarningShown = false;
 let currentFinalQuestions = [];
 let reinforcementCards = [];
 let flippedReinforcementCards = [];
@@ -564,23 +572,255 @@ function userKey(name) {
   return `${name}_${getUserStorageSuffix()}`;
 }
 
+function safeParseStoredJSON(value, fallback) {
+  try {
+    return value ? JSON.parse(value) : fallback;
+  } catch (error) {
+    console.warn("No fue posible leer un dato local del progreso.", error);
+    return fallback;
+  }
+}
+
 function loadUserProgress() {
   selectedCompanion = companions.find(c => c.id === localStorage.getItem(userKey("fgc_selected_companion"))) || null;
   highestUnlocked = Math.min(parseInt(localStorage.getItem(userKey("fgc_highest_unlocked"))) || 1, MAX_MODULES);
-  viewedTheoryByModule = JSON.parse(localStorage.getItem(userKey("fgc_viewed_theory")) || "{}");
-  viewedResourcesByModule = JSON.parse(localStorage.getItem(userKey("fgc_viewed_resources")) || "{}");
-  activityProgressByModule = JSON.parse(localStorage.getItem(userKey("fgc_activity_progress")) || "{}");
-  quizResultsByModule = JSON.parse(localStorage.getItem(userKey("fgc_quiz_results")) || "{}");
-  certificates = JSON.parse(localStorage.getItem(userKey("fgc_certificates")) || "[]");
+  viewedTheoryByModule = safeParseStoredJSON(localStorage.getItem(userKey("fgc_viewed_theory")), {});
+  viewedResourcesByModule = safeParseStoredJSON(localStorage.getItem(userKey("fgc_viewed_resources")), {});
+  activityProgressByModule = safeParseStoredJSON(localStorage.getItem(userKey("fgc_activity_progress")), {});
+  quizResultsByModule = safeParseStoredJSON(localStorage.getItem(userKey("fgc_quiz_results")), {});
+  certificates = safeParseStoredJSON(localStorage.getItem(userKey("fgc_certificates")), []);
+  finalEvaluationResult = safeParseStoredJSON(localStorage.getItem(userKey("fgc_final_evaluation")), null);
+  progressUpdatedAt = localStorage.getItem(userKey("fgc_progress_updated_at")) || null;
 }
 
-function saveUserProgress() {
+function writeLocalProgress() {
+  if (selectedCompanion?.id) {
+    localStorage.setItem(userKey("fgc_selected_companion"), selectedCompanion.id);
+  } else {
+    localStorage.removeItem(userKey("fgc_selected_companion"));
+  }
   localStorage.setItem(userKey("fgc_highest_unlocked"), highestUnlocked);
   localStorage.setItem(userKey("fgc_viewed_theory"), JSON.stringify(viewedTheoryByModule));
   localStorage.setItem(userKey("fgc_viewed_resources"), JSON.stringify(viewedResourcesByModule));
   localStorage.setItem(userKey("fgc_activity_progress"), JSON.stringify(activityProgressByModule));
   localStorage.setItem(userKey("fgc_quiz_results"), JSON.stringify(quizResultsByModule));
   localStorage.setItem(userKey("fgc_certificates"), JSON.stringify(certificates));
+  localStorage.setItem(userKey("fgc_final_evaluation"), JSON.stringify(finalEvaluationResult));
+  if (progressUpdatedAt) {
+    localStorage.setItem(userKey("fgc_progress_updated_at"), progressUpdatedAt);
+  }
+}
+
+function normalizeProgressSnapshot(snapshot) {
+  const value = snapshot && typeof snapshot === "object" ? snapshot : {};
+  const objectOrEmpty = input => input && typeof input === "object" && !Array.isArray(input) ? input : {};
+  return {
+    version: 1,
+    updatedAt: typeof value.updatedAt === "string" ? value.updatedAt : null,
+    selectedCompanionId: typeof value.selectedCompanionId === "string" ? value.selectedCompanionId : null,
+    highestUnlocked: Math.min(Math.max(parseInt(value.highestUnlocked) || 1, 1), MAX_MODULES),
+    viewedTheoryByModule: objectOrEmpty(value.viewedTheoryByModule),
+    viewedResourcesByModule: objectOrEmpty(value.viewedResourcesByModule),
+    activityProgressByModule: objectOrEmpty(value.activityProgressByModule),
+    quizResultsByModule: objectOrEmpty(value.quizResultsByModule),
+    certificates: Array.isArray(value.certificates) ? value.certificates : [],
+    finalEvaluationResult: value.finalEvaluationResult && typeof value.finalEvaluationResult === "object"
+      ? value.finalEvaluationResult
+      : null
+  };
+}
+
+function buildProgressSnapshot(updatedAt = progressUpdatedAt) {
+  return normalizeProgressSnapshot({
+    updatedAt,
+    selectedCompanionId: selectedCompanion?.id || null,
+    highestUnlocked,
+    viewedTheoryByModule,
+    viewedResourcesByModule,
+    activityProgressByModule,
+    quizResultsByModule,
+    certificates,
+    finalEvaluationResult
+  });
+}
+
+function hasMeaningfulProgress(snapshot) {
+  const value = normalizeProgressSnapshot(snapshot);
+  return !!value.selectedCompanionId
+    || value.highestUnlocked > 1
+    || Object.keys(value.viewedTheoryByModule).length > 0
+    || Object.keys(value.viewedResourcesByModule).length > 0
+    || Object.keys(value.activityProgressByModule).length > 0
+    || Object.keys(value.quizResultsByModule).length > 0
+    || value.certificates.length > 0
+    || !!value.finalEvaluationResult;
+}
+
+function mergeViewedCollections(localCollection, cloudCollection) {
+  const merged = {};
+  const moduleIds = new Set([...Object.keys(localCollection), ...Object.keys(cloudCollection)]);
+  moduleIds.forEach(moduleId => {
+    merged[moduleId] = [...new Set([
+      ...(Array.isArray(cloudCollection[moduleId]) ? cloudCollection[moduleId] : []),
+      ...(Array.isArray(localCollection[moduleId]) ? localCollection[moduleId] : [])
+    ])];
+  });
+  return merged;
+}
+
+function mergeActivityProgress(localProgress, cloudProgress) {
+  const merged = {};
+  const moduleIds = new Set([...Object.keys(localProgress), ...Object.keys(cloudProgress)]);
+  moduleIds.forEach(moduleId => {
+    const local = localProgress[moduleId] || {};
+    const cloud = cloudProgress[moduleId] || {};
+    merged[moduleId] = {
+      ...cloud,
+      ...local,
+      memory: !!(cloud.memory || local.memory),
+      review: !!(cloud.review || local.review)
+    };
+    if (!local.reviewAnswers && cloud.reviewAnswers) {
+      merged[moduleId].reviewAnswers = cloud.reviewAnswers;
+    }
+  });
+  return merged;
+}
+
+function mergeQuizResults(localResults, cloudResults) {
+  const merged = {};
+  const moduleIds = new Set([...Object.keys(localResults), ...Object.keys(cloudResults)]);
+  moduleIds.forEach(moduleId => {
+    const local = localResults[moduleId];
+    const cloud = cloudResults[moduleId];
+    if (!local) merged[moduleId] = cloud;
+    else if (!cloud) merged[moduleId] = local;
+    else merged[moduleId] = (Number(local.score) || 0) >= (Number(cloud.score) || 0) ? local : cloud;
+  });
+  return merged;
+}
+
+function mergeCertificates(localCertificates, cloudCertificates) {
+  const merged = new Map();
+  [...cloudCertificates, ...localCertificates].forEach(certificate => {
+    if (certificate && certificate.modId) merged.set(String(certificate.modId), certificate);
+  });
+  return [...merged.values()];
+}
+
+function mergeProgressSnapshots(localSnapshot, cloudSnapshot) {
+  const local = normalizeProgressSnapshot(localSnapshot);
+  const cloud = normalizeProgressSnapshot(cloudSnapshot);
+  const localTime = Date.parse(local.updatedAt || "") || 0;
+  const cloudTime = Date.parse(cloud.updatedAt || "") || 0;
+  const newer = localTime > cloudTime ? local : cloud;
+  const older = newer === local ? cloud : local;
+  const localFinalScore = Number(local.finalEvaluationResult?.score) || 0;
+  const cloudFinalScore = Number(cloud.finalEvaluationResult?.score) || 0;
+
+  return normalizeProgressSnapshot({
+    updatedAt: new Date().toISOString(),
+    selectedCompanionId: newer.selectedCompanionId || older.selectedCompanionId,
+    highestUnlocked: Math.max(local.highestUnlocked, cloud.highestUnlocked),
+    viewedTheoryByModule: mergeViewedCollections(local.viewedTheoryByModule, cloud.viewedTheoryByModule),
+    viewedResourcesByModule: mergeViewedCollections(local.viewedResourcesByModule, cloud.viewedResourcesByModule),
+    activityProgressByModule: mergeActivityProgress(local.activityProgressByModule, cloud.activityProgressByModule),
+    quizResultsByModule: mergeQuizResults(local.quizResultsByModule, cloud.quizResultsByModule),
+    certificates: mergeCertificates(local.certificates, cloud.certificates),
+    finalEvaluationResult: localFinalScore >= cloudFinalScore
+      ? local.finalEvaluationResult || cloud.finalEvaluationResult
+      : cloud.finalEvaluationResult
+  });
+}
+
+function applyProgressSnapshot(snapshot) {
+  const value = normalizeProgressSnapshot(snapshot);
+  selectedCompanion = companions.find(companion => companion.id === value.selectedCompanionId) || null;
+  highestUnlocked = value.highestUnlocked;
+  viewedTheoryByModule = value.viewedTheoryByModule;
+  viewedResourcesByModule = value.viewedResourcesByModule;
+  activityProgressByModule = value.activityProgressByModule;
+  quizResultsByModule = value.quizResultsByModule;
+  certificates = value.certificates;
+  finalEvaluationResult = value.finalEvaluationResult;
+  progressUpdatedAt = value.updatedAt || new Date().toISOString();
+  writeLocalProgress();
+}
+
+async function persistProgressToCloud(snapshot = buildProgressSnapshot()) {
+  if (!supabaseClient || !currentUser) return;
+  const { error } = await supabaseClient.auth.updateUser({
+    data: { [CLOUD_PROGRESS_FIELD]: snapshot }
+  });
+  if (error) throw error;
+  cloudSyncWarningShown = false;
+}
+
+function reportCloudSyncError(error) {
+  console.error("No fue posible sincronizar el progreso con la nube.", error);
+  if (!cloudSyncWarningShown) {
+    cloudSyncWarningShown = true;
+    showToast("Tu avance quedó guardado en este equipo. Se sincronizará cuando vuelva la conexión.");
+  }
+}
+
+function queueCloudProgressSync() {
+  if (!cloudProgressReady || !currentUser || !supabaseClient) return;
+  window.clearTimeout(cloudSyncTimer);
+  cloudSyncTimer = window.setTimeout(() => {
+    cloudSyncTimer = null;
+    const snapshot = buildProgressSnapshot();
+    cloudSyncPromise = cloudSyncPromise
+      .catch(() => {})
+      .then(() => persistProgressToCloud(snapshot))
+      .catch(reportCloudSyncError);
+  }, CLOUD_SYNC_DELAY);
+}
+
+async function flushCloudProgressSync() {
+  if (cloudSyncTimer) {
+    window.clearTimeout(cloudSyncTimer);
+    cloudSyncTimer = null;
+    const snapshot = buildProgressSnapshot();
+    cloudSyncPromise = cloudSyncPromise
+      .catch(() => {})
+      .then(() => persistProgressToCloud(snapshot));
+  }
+  try {
+    await cloudSyncPromise;
+  } catch (error) {
+    reportCloudSyncError(error);
+  }
+}
+
+async function syncProgressWithCloud(authUser) {
+  cloudProgressReady = false;
+  loadUserProgress();
+  const localSnapshot = buildProgressSnapshot(progressUpdatedAt);
+  const cloudSnapshot = normalizeProgressSnapshot(authUser?.user_metadata?.[CLOUD_PROGRESS_FIELD]);
+  const localHasProgress = hasMeaningfulProgress(localSnapshot);
+  const cloudHasProgress = hasMeaningfulProgress(cloudSnapshot);
+
+  if (!localHasProgress && !cloudHasProgress) {
+    cloudProgressReady = true;
+    return;
+  }
+
+  const merged = mergeProgressSnapshots(localSnapshot, cloudSnapshot);
+  applyProgressSnapshot(merged);
+  cloudProgressReady = true;
+
+  try {
+    await persistProgressToCloud(buildProgressSnapshot());
+  } catch (error) {
+    reportCloudSyncError(error);
+  }
+}
+
+function saveUserProgress() {
+  progressUpdatedAt = new Date().toISOString();
+  writeLocalProgress();
+  queueCloudProgressSync();
 }
 
 function getStudentName() {
@@ -746,7 +986,7 @@ function renderAvatars() {
 
 window.selectCompanion = function(id) {
   selectedCompanion = companions.find(c => c.id === id);
-  localStorage.setItem(userKey("fgc_selected_companion"), id);
+  saveUserProgress();
   document.querySelectorAll('.companion-card').forEach(c => {
     c.classList.remove('is-selected');
     c.setAttribute("aria-pressed", "false");
@@ -1756,7 +1996,14 @@ function renderFinalEvaluationPanel() {
   if (!panel) return;
   panel.hidden = !areCoreModulesApproved();
   if (!panel.hidden) {
-    document.getElementById("finalEvaluationContainer").innerHTML = "";
+    document.getElementById("finalEvaluationContainer").innerHTML = finalEvaluationResult
+      ? `
+        <div class="evaluation-summary ${finalEvaluationResult.score === 100 ? 'is-perfect' : ''}">
+          <strong>Último resultado: ${finalEvaluationResult.score}%</strong>
+          <span>${finalEvaluationResult.passed ? 'Evaluación final aprobada.' : 'Puedes repetirla con nuevas preguntas.'}</span>
+        </div>
+      `
+      : "";
   }
 }
 
@@ -1802,6 +2049,16 @@ window.submitFinalEvaluation = function() {
   }
 
   const porcentaje = Math.round((correctas / currentFinalQuestions.length) * 100);
+  if (!finalEvaluationResult || porcentaje >= finalEvaluationResult.score) {
+    finalEvaluationResult = {
+      score: porcentaje,
+      correctas,
+      total: currentFinalQuestions.length,
+      passed: porcentaje >= 80,
+      date: new Date().toLocaleDateString("es-CO")
+    };
+    saveUserProgress();
+  }
   document.getElementById("quizModalBody").innerHTML = `
     <div class="final-result ${porcentaje >= 80 ? 'is-success' : 'is-warning'}">
       <h3>${porcentaje >= 80 ? 'Evaluación final aprobada' : 'Puedes repetir la evaluación'}</h3>
@@ -2016,17 +2273,20 @@ document.getElementById("loginForm").onsubmit = async (e) => {
   const name = document.getElementById("nameInput").value.trim();
 
   try {
+    let authUser = null;
     if (isLoginMode) {
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      currentUser = { id: data.user.id, email: data.user.email, name: data.user.user_metadata?.full_name || email.split("@")[0] };
+      authUser = data.user;
+      currentUser = { id: authUser.id, email: authUser.email, name: authUser.user_metadata?.full_name || email.split("@")[0] };
     } else {
       const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name } } });
       if (error) throw error;
-      currentUser = { id: data.user.id, email: data.user.email, name: name };
+      authUser = data.user;
+      currentUser = { id: authUser.id, email: authUser.email, name: name };
     }
     localStorage.setItem("fgc_currentUser", JSON.stringify(currentUser));
-    loadUserProgress();
+    await syncProgressWithCloud(authUser);
     document.getElementById("appHeader").hidden = false;
     setHeaderIdentity();
     renderAvatars(); renderMap();
@@ -2043,14 +2303,21 @@ document.getElementById("loginForm").onsubmit = async (e) => {
 };
 
 document.getElementById("logoutBtn").onclick = async () => {
+  await flushCloudProgressSync();
   await supabaseClient.auth.signOut();
   currentUser = null; localStorage.removeItem("fgc_currentUser");
+  cloudProgressReady = false;
+  progressUpdatedAt = null;
+  window.clearTimeout(cloudSyncTimer);
+  cloudSyncTimer = null;
   highestUnlocked = 1;
   selectedCompanion = null;
   viewedTheoryByModule = {};
   viewedResourcesByModule = {};
   activityProgressByModule = {};
+  quizResultsByModule = {};
   certificates = [];
+  finalEvaluationResult = null;
   document.getElementById("appHeader").hidden = true;
   switchView("loginView");
 };
@@ -2157,13 +2424,45 @@ accessibilityGuideAudio.onended = () => {
 // La primera guia corresponde a la pantalla de acceso.
 resetAccessibilityGuide("loginView");
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   if (currentUser) {
     loadUserProgress();
+    try {
+      const { data, error } = await supabaseClient.auth.getUser();
+      if (error) throw error;
+      if (data.user) {
+        currentUser = {
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.user_metadata?.full_name || currentUser.name || data.user.email?.split("@")[0]
+        };
+        localStorage.setItem("fgc_currentUser", JSON.stringify(currentUser));
+        await syncProgressWithCloud(data.user);
+      }
+    } catch (error) {
+      console.warn("La aplicación inició con la copia local del progreso.", error);
+      cloudProgressReady = false;
+    }
     document.getElementById("appHeader").hidden = false;
     setHeaderIdentity();
     renderAvatars(); renderMap();
     switchView("homeView");
     showToast(`Hola de nuevo, ${currentUser.name}`);
+  }
+});
+
+window.addEventListener("online", async () => {
+  if (!currentUser || !supabaseClient) return;
+  try {
+    const { data, error } = await supabaseClient.auth.getUser();
+    if (error) throw error;
+    if (!data.user) return;
+    await syncProgressWithCloud(data.user);
+    renderAvatars();
+    renderMap();
+    if (document.getElementById("profileView").classList.contains("is-active")) renderProfile();
+    showToast("Tu progreso quedó sincronizado con la nube.");
+  } catch (error) {
+    reportCloudSyncError(error);
   }
 });
